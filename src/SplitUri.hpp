@@ -221,11 +221,13 @@ namespace siddiqsoft
 		{
 			posProtocol = 8;
 			uri.scheme  = UriScheme::WebHttps;
+			uri.authority.port = 443; // replace later if present
 		}
 		else if (aEndpoint.starts_with(matchHttp))
 		{
 			posProtocol = 7;
 			uri.scheme  = UriScheme::WebHttp;
+			uri.authority.port = 80; // replace later if present
 		}
 
 		if (posProtocol != std::string::npos)
@@ -245,7 +247,6 @@ namespace siddiqsoft
 			auto pos2 = aEndpoint.find(matchSlash, posProtocol);
 
 			// Extract the server:port portion.. make sure we don't calculate based on missing `/`
-			uri.authority.port = 80; // replace later if present
 			uri.authority.host =
 					aEndpoint.substr(posProtocol, pos2 != std::string::npos ? (pos2 - posProtocol) : std::string::npos);
 			if (auto pos3 = uri.authority.host.find(matchColon); pos3 != std::string::npos)

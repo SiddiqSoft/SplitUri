@@ -77,11 +77,22 @@ TEST(helpers_splituri, test_3)
 }
 
 
-TEST(helpers_splituri, test_4)
+TEST(helpers_splituri, test_4a)
 {
 	auto uri = siddiqsoft::SplitUri<std::string>("http://m.co");
 	EXPECT_EQ("m.co", uri.authority.host);
 	EXPECT_EQ(80, uri.authority.port);
+	EXPECT_EQ("", uri.url);
+
+	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
+}
+
+
+TEST(helpers_splituri, test_4b)
+{
+	auto uri = siddiqsoft::SplitUri<std::string>("https://m.co");
+	EXPECT_EQ("m.co", uri.authority.host);
+	EXPECT_EQ(443, uri.authority.port);
 	EXPECT_EQ("", uri.url);
 
 	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
@@ -147,6 +158,28 @@ TEST(helpers_splituri, test_6b)
 	EXPECT_EQ("www.example.com", uri.authority.host);
 	EXPECT_EQ("john.doe", uri.authority.userInfo);
 	EXPECT_EQ(123, uri.authority.port);
+	EXPECT_EQ("/forum/questions?tag=networking&order=newest#top", uri.url);
+	EXPECT_EQ(2, uri.path.size());
+	EXPECT_EQ(2, uri.query.size());
+	EXPECT_EQ("top", uri.fragment);
+
+	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
+
+	nlohmann::json doc = uri;
+	EXPECT_TRUE(doc.is_object());
+	std::cerr << doc.dump(3) << std::endl;
+	EXPECT_EQ("questions", doc.value("/path/1"_json_pointer, ""));
+}
+
+
+TEST(helpers_splituri, test_6c)
+{
+	using namespace std;
+
+	auto uri = siddiqsoft::SplitUri("https://john.doe@www.example.com/forum/questions?tag=networking&order=newest#top"s);
+	EXPECT_EQ("www.example.com", uri.authority.host);
+	EXPECT_EQ("john.doe", uri.authority.userInfo);
+	EXPECT_EQ(443, uri.authority.port);
 	EXPECT_EQ("/forum/questions?tag=networking&order=newest#top", uri.url);
 	EXPECT_EQ(2, uri.path.size());
 	EXPECT_EQ(2, uri.query.size());
