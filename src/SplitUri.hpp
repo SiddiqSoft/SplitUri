@@ -72,6 +72,7 @@ namespace siddiqsoft
 		NLOHMANN_DEFINE_TYPE_INTRUSIVE(AuthorityHttp<T>, userInfo, host, port);
 	};
 
+
 	template <class T> requires std::same_as<std::string, T> || std::same_as<std::wstring, T> struct AuthorityLdap
 	{
 		T host {};
@@ -90,6 +91,7 @@ namespace siddiqsoft
 
 		NLOHMANN_DEFINE_TYPE_INTRUSIVE(AuthorityNone<T>, none);
 	};
+
 
 	enum class UriScheme
 	{
@@ -121,28 +123,22 @@ namespace siddiqsoft
 			requires(std::same_as<std::string, T> || std::same_as<std::wstring, T>) &&
 			std::same_as<AuthorityHttp<T>, Auth> struct Uri
 	{
-		UriScheme      scheme;
-		T              separatorColonSlashSlash {"://"};
+		UriScheme      scheme {UriScheme::Unknown};
 		Auth           authority;
-		T              separatorSlash {"/"};
 		std::vector<T> path {};
-		T              separatorQuestion {"?"};
 		std::map<T, T> query {};
 		T              fragment {};
+		T              urlPart {};   // contains the "balance" post Authority section
+		T              queryPart {}; // contains the "query" part
 
-		T url {}; // contains the "balance" post Authority section
+		operator T() { return std::format("{}://{}{}", scheme, authority.host, urlPart); }
 
-		operator T()
-		{
-			// Build the url back
+		NLOHMANN_DEFINE_TYPE_INTRUSIVE(Uri<T>, scheme, authority, urlPart, queryPart, path, query, fragment);
 
-			// Compose the final uri
-			return std::format(
-					"{}{}{}{}{}", scheme, separatorColonSlashSlash, authority, url.starts_with("/") ? "" : separatorSlash, url);
-		}
-
-
-		NLOHMANN_DEFINE_TYPE_INTRUSIVE(Uri<T>, scheme, authority, url, path, query, fragment);
+	private:
+		T separatorColonSlashSlash {"://"};
+		T separatorSlash {"/"};
+		T separatorQuestion {"?"};
 	};
 
 
@@ -219,14 +215,14 @@ namespace siddiqsoft
 
 		if (aEndpoint.starts_with(matchHttps))
 		{
-			posProtocol = 8;
-			uri.scheme  = UriScheme::WebHttps;
+			posProtocol        = 8;
+			uri.scheme         = UriScheme::WebHttps;
 			uri.authority.port = 443; // replace later if present
 		}
 		else if (aEndpoint.starts_with(matchHttp))
 		{
-			posProtocol = 7;
-			uri.scheme  = UriScheme::WebHttp;
+			posProtocol        = 7;
+			uri.scheme         = UriScheme::WebHttp;
 			uri.authority.port = 80; // replace later if present
 		}
 
@@ -260,7 +256,7 @@ namespace siddiqsoft
 			if (pos2 != std::string::npos)
 			{
 				// Finally, the rest of the endpoint is the url portion.
-				uri.url = aEndpoint.substr(pos2);
+				uri.urlPart = aEndpoint.substr(pos2);
 
 				// Continue to split the path, query and fragment
 				// Pull out the fragment
@@ -277,10 +273,10 @@ namespace siddiqsoft
 						aEndpoint.substr(pos2, posQueryPart != std::string::npos ? posQueryPart - (pos2) : std::string::npos);
 				if (!pathSegment.empty()) uri.path = siddiqsoft::string2vector::parse<T>(pathSegment, matchSlash);
 
-				auto querySegment =
+				uri.queryPart =
 						aEndpoint.substr(posQueryPart + 1,
 				                         posFragment != std::string::npos ? (posFragment) - (posQueryPart + 1) : std::string::npos);
-				if (!querySegment.empty()) uri.query = siddiqsoft::string2map::parse<T>(querySegment, matchEq, matchAmp);
+				if (!uri.queryPart.empty()) uri.query = siddiqsoft::string2map::parse<T>(uri.queryPart, matchEq, matchAmp);
 			}
 		}
 
