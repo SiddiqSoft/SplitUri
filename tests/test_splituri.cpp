@@ -66,12 +66,23 @@ TEST(helpers_splituri, test_2)
 	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
 }
 
-TEST(helpers_splituri, test_3)
+TEST(helpers_splituri, test_3a)
 {
-	auto uri = siddiqsoft::SplitUri<std::string>("http://search.msn.com");
+	auto uri = "http://search.msn.com"_Uri;
 	EXPECT_EQ("search.msn.com", uri.authority.host);
 	EXPECT_EQ(80, uri.authority.port);
 	EXPECT_EQ("", uri.urlPart);
+
+	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
+}
+
+
+TEST(helpers_splituri, test_3b)
+{
+	auto uri = siddiqsoft::SplitUri<std::string>("http://search.msn.com:65536/");
+	EXPECT_EQ("search.msn.com", uri.authority.host);
+	EXPECT_EQ(0, uri.authority.port); // max uint16_t is 65535 so anything more will roll it over to 0
+	EXPECT_EQ("/", uri.urlPart);
 
 	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
 }
@@ -302,8 +313,47 @@ TEST(helpers_splituri, test8b)
 	std::cerr << doc.dump(3) << std::endl;
 }
 
+TEST(helpers_splituri, test_9a)
+{
+	auto uri = "http://n.co:6553/"_Uri;
+	EXPECT_EQ("n.co", uri.authority.host);
+	EXPECT_EQ(6553, uri.authority.port);
+	EXPECT_EQ("/", uri.urlPart);
 
-TEST(helpers_splituri, test9)
+	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
+}
+
+TEST(helpers_splituri, test_9b)
+{
+	auto uri = "http://n.co:6553"_Uri;
+	EXPECT_EQ("n.co", uri.authority.host);
+	EXPECT_EQ(6553, uri.authority.port);
+	EXPECT_EQ("", uri.urlPart);
+
+	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
+}
+
+TEST(helpers_splituri, test_9c)
+{
+	auto uri = "http://n.co:65536/"_Uri;
+	EXPECT_EQ("n.co", uri.authority.host);
+	EXPECT_EQ(0, uri.authority.port); // we're just above the max uint16_t
+	EXPECT_EQ("/", uri.urlPart);
+
+	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
+}
+
+TEST(helpers_splituri, test_9d)
+{
+	auto uri = "http://n.co:65535"_Uri;
+	EXPECT_EQ("n.co", uri.authority.host);
+	EXPECT_EQ(65535, uri.authority.port);
+	EXPECT_EQ("", uri.urlPart);
+
+	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
+}
+
+TEST(helpers_splituri, test19)
 {
 	using namespace std;
 

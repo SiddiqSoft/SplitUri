@@ -54,10 +54,8 @@ namespace siddiqsoft
 	template <class T> requires std::same_as<std::string, T> || std::same_as<std::wstring, T> struct AuthorityHttp
 	{
 		T        userInfo {};
-		T        seperatorAt {"@"};
 		T        host {};
-		T        separatorColon {":"};
-		uint16_t port {0};
+		uint16_t port {0}; // maximum of 65535
 
 		operator T() const
 		{
@@ -70,6 +68,10 @@ namespace siddiqsoft
 		}
 
 		NLOHMANN_DEFINE_TYPE_INTRUSIVE(AuthorityHttp<T>, userInfo, host, port);
+
+	private:
+		T seperatorAt {"@"};
+		T separatorColon {":"};
 	};
 
 
@@ -131,7 +133,7 @@ namespace siddiqsoft
 		T              urlPart {};   // contains the "balance" post Authority section
 		T              queryPart {}; // contains the "query" part
 
-		operator T() { return std::format("{}://{}{}", scheme, authority.host, urlPart); }
+		operator std::string() { return std::format("{}://{}{}", scheme, authority.host, urlPart); }
 
 		NLOHMANN_DEFINE_TYPE_INTRUSIVE(Uri<T>, scheme, authority, urlPart, queryPart, path, query, fragment);
 
@@ -283,6 +285,15 @@ namespace siddiqsoft
 		return std::move(uri);
 	}
 } // namespace siddiqsoft
+
+/// @brief Literal operator `_Uri`
+/// @param src Given a sequence of characters
+/// @param sz Length of given character sequence
+/// @return Uri<string,AuthorityHttp> object
+static siddiqsoft::Uri<std::string, siddiqsoft::AuthorityHttp<std::string>> operator"" _Uri(const char* src, size_t sz)
+{
+	return siddiqsoft::SplitUri<std::string, siddiqsoft::AuthorityHttp<std::string>>({src, sz});
+}
 
 
 template <class T> struct std::formatter<siddiqsoft::AuthorityHttp<T>> : std::formatter<T>
