@@ -1,7 +1,7 @@
 ﻿SplitUri : Parse Uri Utility
 -------------------------------------------
 <!-- badges -->
-<!--[![CodeQL](https://github.com/SiddiqSoft/SplitUri/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SiddiqSoft/SplitUri/actions/workflows/codeql-analysis.yml)-->
+[![CodeQL](https://github.com/SiddiqSoft/SplitUri/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SiddiqSoft/SplitUri/actions/workflows/codeql-analysis.yml)
 [![Build Status](https://dev.azure.com/siddiqsoft/siddiqsoft/_apis/build/status/SiddiqSoft.SplitUri?branchName=main)](https://dev.azure.com/siddiqsoft/siddiqsoft/_build/latest?definitionId=14&branchName=main)
 [![Build Status](https://dev.azure.com/siddiqsoft/siddiqsoft/_apis/build/status/SiddiqSoft.SplitUri?branchName=develop)](https://dev.azure.com/siddiqsoft/siddiqsoft/_build/latest?definitionId=14&branchName=develop)
 ![](https://img.shields.io/nuget/v/SiddiqSoft.SplitUri)
