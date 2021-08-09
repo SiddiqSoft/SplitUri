@@ -32,18 +32,60 @@
 	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
+
 #include "gtest/gtest.h"
 #include <iostream>
 
 #include "nlohmann/json.hpp"
 #include "../src/SplitUri.hpp"
 
-
-TEST(helpers_splituri, test_1)
+TEST(examples, example_1)
 {
-	using namespace std;
+	using namespace siddiqsoft::literals;
 
-	auto uri = siddiqsoft::SplitUri<>("http://search.msn.com:8080/results.asp?RS=CHECKED&FORM=MSNH&v=1&q=wininet"s);
+	auto u = "https://www.google.com/search?q=siddiqsoft#v1"_Uri;
+
+	EXPECT_EQ("www.google.com", u.authority.host);
+	std::cerr << u.authority.host << std::endl;
+
+	EXPECT_EQ(443, u.authority.port);
+	std::cerr << u.authority.port << std::endl;
+
+	EXPECT_EQ("/search?q=siddiqsoft#v1", u.urlPart);
+	std::cerr << u.urlPart << std::endl;
+
+	EXPECT_EQ("q=siddiqsoft", u.queryPart);
+	std::cerr << u.queryPart << std::endl;
+
+	EXPECT_EQ("v1", u.fragment);
+	std::cerr << u.fragment << std::endl;
+
+	EXPECT_EQ("search", u.path.at(0));
+	std::cerr << nlohmann::json(u.path).dump() << std::endl;
+
+	EXPECT_EQ("siddiqsoft", u.query.at("q"));
+	std::cerr << nlohmann::json(u.query).dump() << std::endl;
+
+	// Checks that both serializers are available (caught at compile-time)
+	EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, u.scheme);
+	std::cerr << std::format("{}", u.scheme) << "...." << nlohmann::json(u.scheme).dump() << std::endl;
+
+	// Note that despite the initial uri string skipping the port, the SplitUri decodes and stores the port
+	EXPECT_EQ("www.google.com:443", std::format("{}", u.authority));
+	std::cerr << std::format("{}", u.authority) << std::endl;
+
+	// The "rebuilt" endpoint
+	EXPECT_EQ("https://www.google.com/search?q=siddiqsoft#v1", std::format("{}", u));
+	std::cerr << std::format("{}", u) << std::endl;
+}
+
+TEST(helpers_splituri_narrow, test_1)
+{
+	using namespace siddiqsoft::literals;
+
+	auto uri = "http://search.msn.com:8080/results.asp?RS=CHECKED&FORM=MSNH&v=1&q=wininet"_Uri;
 	EXPECT_EQ("search.msn.com", uri.authority.host);
 	EXPECT_EQ(8080, uri.authority.port);
 	EXPECT_EQ("/results.asp?RS=CHECKED&FORM=MSNH&v=1&q=wininet", uri.urlPart);
@@ -56,7 +98,7 @@ TEST(helpers_splituri, test_1)
 	EXPECT_EQ("results.asp", doc.value("/path/0"_json_pointer, ""));
 }
 
-TEST(helpers_splituri, test_2)
+TEST(helpers_splituri_narrow, test_2)
 {
 	auto uri = siddiqsoft::SplitUri<std::string>("http://search.msn.com:8080");
 	EXPECT_EQ("search.msn.com", uri.authority.host);
@@ -66,8 +108,10 @@ TEST(helpers_splituri, test_2)
 	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
 }
 
-TEST(helpers_splituri, test_3a)
+TEST(helpers_splituri_narrow, test_3a)
 {
+	using namespace siddiqsoft::literals;
+
 	auto uri = "http://search.msn.com"_Uri;
 	EXPECT_EQ("search.msn.com", uri.authority.host);
 	EXPECT_EQ(80, uri.authority.port);
@@ -77,7 +121,7 @@ TEST(helpers_splituri, test_3a)
 }
 
 
-TEST(helpers_splituri, test_3b)
+TEST(helpers_splituri_narrow, test_3b)
 {
 	auto uri = siddiqsoft::SplitUri<std::string>("http://search.msn.com:65536/");
 	EXPECT_EQ("search.msn.com", uri.authority.host);
@@ -88,7 +132,7 @@ TEST(helpers_splituri, test_3b)
 }
 
 
-TEST(helpers_splituri, test_4a)
+TEST(helpers_splituri_narrow, test_4a)
 {
 	auto uri = siddiqsoft::SplitUri<std::string>("http://m.co");
 	EXPECT_EQ("m.co", uri.authority.host);
@@ -100,7 +144,7 @@ TEST(helpers_splituri, test_4a)
 }
 
 
-TEST(helpers_splituri, test_4b)
+TEST(helpers_splituri_narrow, test_4b)
 {
 	auto uri = siddiqsoft::SplitUri<std::string>("https://m.co");
 	EXPECT_EQ("m.co", uri.authority.host);
@@ -112,7 +156,7 @@ TEST(helpers_splituri, test_4b)
 }
 
 
-TEST(helpers_splituri, test_4c)
+TEST(helpers_splituri_narrow, test_4c)
 {
 	auto uri = siddiqsoft::SplitUri<std::string>("http://localhost");
 	EXPECT_EQ("localhost", uri.authority.host);
@@ -124,7 +168,7 @@ TEST(helpers_splituri, test_4c)
 }
 
 
-TEST(helpers_splituri, test_5a)
+TEST(helpers_splituri_narrow, test_5a)
 {
 	auto uri = siddiqsoft::SplitUri<std::string>("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
 	                                             "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
@@ -141,7 +185,7 @@ TEST(helpers_splituri, test_5a)
 	EXPECT_EQ("Charts('Chart%201')", doc.value("/path/6"_json_pointer, ""));
 }
 
-TEST(helpers_splituri, test_5b)
+TEST(helpers_splituri_narrow, test_5b)
 {
 	auto uri = siddiqsoft::SplitUri<std::string>("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
 	                                             "model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5");
@@ -158,7 +202,7 @@ TEST(helpers_splituri, test_5b)
 	EXPECT_EQ("Charts('Chart%201')", doc.value("/path/6"_json_pointer, ""));
 }
 
-TEST(helpers_splituri, test_6a)
+TEST(helpers_splituri_narrow, test_6a)
 {
 	auto uri = siddiqsoft::SplitUri<std::string>(
 			"https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top");
@@ -174,7 +218,7 @@ TEST(helpers_splituri, test_6a)
 }
 
 
-TEST(helpers_splituri, test_6b)
+TEST(helpers_splituri_narrow, test_6b)
 {
 	using namespace std;
 
@@ -196,7 +240,7 @@ TEST(helpers_splituri, test_6b)
 }
 
 
-TEST(helpers_splituri, test_6c)
+TEST(helpers_splituri_narrow, test_6c)
 {
 	using namespace std;
 
@@ -218,13 +262,13 @@ TEST(helpers_splituri, test_6c)
 }
 
 
-TEST(helpers_splituri, test7a)
+TEST(helpers_splituri_narrow, test7a)
 {
 	using namespace std;
 
-	auto uri = siddiqsoft::SplitUri("https://adrs-engr.servicebus.windows.net:9098"s);
+	auto uri = siddiqsoft::SplitUri("https://a00s-engr.servicebus.windows.net:9098"s);
 	EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, uri.scheme);
-	EXPECT_EQ("adrs-engr.servicebus.windows.net", uri.authority.host);
+	EXPECT_EQ("a00s-engr.servicebus.windows.net", uri.authority.host);
 	EXPECT_EQ(9098, uri.authority.port);
 
 	nlohmann::json doc = uri;
@@ -232,7 +276,7 @@ TEST(helpers_splituri, test7a)
 	std::cerr << doc.dump(3) << std::endl;
 }
 
-TEST(helpers_splituri, test7b)
+TEST(helpers_splituri_narrow, test7b)
 {
 	using namespace std;
 
@@ -250,7 +294,7 @@ TEST(helpers_splituri, test7b)
 	std::cerr << doc.dump(3) << std::endl;
 }
 
-TEST(helpers_splituri, test8a)
+TEST(helpers_splituri_narrow, test8a)
 {
 	using namespace std;
 
@@ -280,13 +324,14 @@ TEST(helpers_splituri, test8a)
 	std::cerr << doc.dump(3) << std::endl;
 }
 
-//https://www.google.com/search?q=siddiqsoft&rlz=1C5CHFA_enUS880US881&oq=siddiqsoft&aqs=chrome..69i57j69i60l4.5894j0j15&sourceid=chrome&ie=UTF-8
-TEST(helpers_splituri, test8b)
+TEST(helpers_splituri_narrow, test8b)
 {
 	using namespace std;
 
-	auto uri = siddiqsoft::SplitUri(
-			"https://www.google.com/search?q=siddiqsoft&rlz=1C5CHFA_enUS880US881&oq=siddiqsoft&aqs=chrome..69i57j69i60l4.5894j0j15&sourceid=chrome&ie=UTF-8"s);
+	std::string endpoint {"https://www.google.com/"
+	                      "search?q=siddiqsoft&rlz=1C5CHFA_enUS880US881&oq=siddiqsoft&aqs=chrome..69i57j69i60l4.5894j0j15&sourceid="
+	                      "chrome&ie=UTF-8"};
+	auto        uri = siddiqsoft::SplitUri(endpoint);
 	EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, uri.scheme);
 	EXPECT_EQ("www.google.com", uri.authority.host);
 	EXPECT_EQ(443, uri.authority.port);
@@ -297,6 +342,9 @@ TEST(helpers_splituri, test8b)
 
 	EXPECT_EQ("q=siddiqsoft&rlz=1C5CHFA_enUS880US881&oq=siddiqsoft&aqs=chrome..69i57j69i60l4.5894j0j15&sourceid=chrome&ie=UTF-8",
 	          uri.queryPart);
+
+	// We should match the initial endpoint--ensures we did not drop anything.
+	EXPECT_EQ(endpoint, std::format("{}://{}{}", uri.scheme, uri.authority.host, uri.urlPart));
 
 	EXPECT_EQ(1, uri.path.size());
 	EXPECT_EQ("search", uri.path.at(0));
@@ -313,8 +361,10 @@ TEST(helpers_splituri, test8b)
 	std::cerr << doc.dump(3) << std::endl;
 }
 
-TEST(helpers_splituri, test_9a)
+TEST(helpers_splituri_narrow, test_9a)
 {
+	using namespace siddiqsoft::literals;
+
 	auto uri = "http://n.co:6553/"_Uri;
 	EXPECT_EQ("n.co", uri.authority.host);
 	EXPECT_EQ(6553, uri.authority.port);
@@ -323,8 +373,10 @@ TEST(helpers_splituri, test_9a)
 	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
 }
 
-TEST(helpers_splituri, test_9b)
+TEST(helpers_splituri_narrow, test_9b)
 {
+	using namespace siddiqsoft::literals;
+
 	auto uri = "http://n.co:6553"_Uri;
 	EXPECT_EQ("n.co", uri.authority.host);
 	EXPECT_EQ(6553, uri.authority.port);
@@ -333,8 +385,10 @@ TEST(helpers_splituri, test_9b)
 	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
 }
 
-TEST(helpers_splituri, test_9c)
+TEST(helpers_splituri_narrow, test_9c)
 {
+	using namespace siddiqsoft::literals;
+
 	auto uri = "http://n.co:65536/"_Uri;
 	EXPECT_EQ("n.co", uri.authority.host);
 	EXPECT_EQ(0, uri.authority.port); // we're just above the max uint16_t
@@ -343,8 +397,10 @@ TEST(helpers_splituri, test_9c)
 	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
 }
 
-TEST(helpers_splituri, test_9d)
+TEST(helpers_splituri_narrow, test_9d)
 {
+	using namespace siddiqsoft::literals;
+
 	auto uri = "http://n.co:65535"_Uri;
 	EXPECT_EQ("n.co", uri.authority.host);
 	EXPECT_EQ(65535, uri.authority.port);
@@ -353,7 +409,7 @@ TEST(helpers_splituri, test_9d)
 	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
 }
 
-TEST(helpers_splituri, test19)
+TEST(helpers_splituri_narrow, test_99a)
 {
 	using namespace std;
 
@@ -377,48 +433,3 @@ TEST(helpers_splituri, test19)
 	EXPECT_TRUE(doc.is_object());
 	std::cerr << doc.dump(3) << std::endl;
 }
-
-//TEST(helpers_splituri, test7a)
-//	{
-//		using namespace std;
-//		string url3       = "https://il-ed-abcd-01.private-corp.com/admin";
-//	auto [s3, p3, u3] = ring2::splitURL(url3);
-//	EXPECT_TRUE(s3 == "il-ed-mara-01.ring2-corp.com");
-//	EXPECT_TRUE(u3 == "/admin");
-//
-//	string url4       = "http://il-ed-mara-01.ring2-corp.com/admin";
-//	auto [s4, p4, u4] = ring2::splitURL(url4);
-//	EXPECT_TRUE(s4 == "il-ed-mara-01.ring2-corp.com");
-//
-//	string url5       = "https://adrs-engr.servicebus.windows.net/";
-//	auto [s5, p5, u5] = ring2::splitURL(url5);
-//	EXPECT_TRUE(s5 == "adrs-engr.servicebus.windows.net");
-//	EXPECT_TRUE(u5 == "/");
-//
-//	string url6       = "https://localhost:8888/";
-//	auto [s6, p6, u6] = ring2::splitURL(url6);
-//	EXPECT_TRUE(s6 == "localhost");
-//	EXPECT_TRUE(u6 == "/");
-//
-//	string url7       = "https://localhost:8888/admin?auth=hi&p=1";
-//	auto [s7, p7, u7] = ring2::splitURL(url7);
-//	EXPECT_TRUE(s7 == "localhost");
-//	EXPECT_TRUE(u7 == "/admin?auth=hi&p=1");
-//
-//	string url8       = "https://localhost";
-//	auto [s8, p8, u8] = ring2::splitURL(url8);
-//	EXPECT_TRUE(s8 == "localhost");
-//	EXPECT_TRUE(u8 == "");
-//
-//	string url9 = "https://www.bing.com/?toWww=1&redig=https://www.bing.com/"
-//				  "search?q=117244609&form=QBLH&sp=-1&pq=19983711434&sc=0-11&qs=n&sk=&cvid=46160ADDF1247EBA6FD76A4F6314D8B";
-//	auto [s9, p9, u9] = ring2::splitURL(url9);
-//	EXPECT_TRUE(s9 == "www.bing.com");
-//	EXPECT_TRUE(u9 == "/?toWww=1&redig=https://www.bing.com/"
-//	                  "search?q=117244609&form=QBLH&sp=-1&pq=19983711434&sc=0-11&qs=n&sk=&cvid=46160ADDF1247EBA6FD76A4F6314D8B");
-//
-//	EXPECT_TRUE(p == 9098);
-//	EXPECT_TRUE(p2 == 9098);
-//	EXPECT_TRUE(p3 == 443);
-//	EXPECT_TRUE(p4 == 80);
-//}

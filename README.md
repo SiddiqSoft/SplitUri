@@ -16,14 +16,83 @@ Parse the Uri for HTTP resources with support for `format` and `nlohmann.json`.
 
 While there are many, many libraries available, the goal of this implementation is to make *usage* easy along with a modern design.
 
-# Requirements
+## Features
 - C++20 compliant toolchain: We use `<concepts>`, `<format>`.
 - The `nlohmann.json` library.
+- Support for `std::string` and `std::wstring`
 - The build and tests are for Visual Studio 2019 under x64.
 
 # Usage
 - Use the nuget [SiddiqSoft.SplitUri](https://www.nuget.org/packages/SiddiqSoft.SplitUri/)
 - Copy paste..whatever works.
+
+## Examples
+
+```cpp
+#include "siddiqsoft/SplitUri.hpp"
+..
+..
+using namespace siddiqsoft::literals;
+// Use the literal operator helper.
+auto uri= "https://www.google.com/search?q=siddiqsoft"_Uri;
+// Outputs https://www.google.com/search?q=siddiqsoft
+std::cout << std::format("{}", uri) << std::endl;
+```
+A more through example
+
+```cpp
+using namespace siddiqsoft::literals;
+
+auto u = "https://www.google.com/search?q=siddiqsoft#v1"_Uri;
+
+EXPECT_EQ("www.google.com", u.authority.host);
+std::cerr << u.authority.host << std::endl;
+
+EXPECT_EQ(443, u.authority.port);
+std::cerr << u.authority.port << std::endl;
+
+EXPECT_EQ("/search?q=siddiqsoft#v1", u.urlPart);
+std::cerr << u.urlPart << std::endl;
+
+EXPECT_EQ("q=siddiqsoft", u.queryPart);
+std::cerr << u.queryPart << std::endl;
+
+EXPECT_EQ("v1", u.fragment);
+std::cerr << u.fragment << std::endl;
+
+EXPECT_EQ("search", u.path.at(0));
+std::cerr << nlohmann::json(u.path).dump() << std::endl;
+
+EXPECT_EQ("siddiqsoft", u.query.at("q"));
+std::cerr << nlohmann::json(u.query).dump() << std::endl;
+
+// Checks that both serializers are available (caught at compile-time)
+EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, u.scheme);
+std::cerr << std::format("{}", u.scheme) << "...." << nlohmann::json(u.scheme).dump() << std::endl;
+
+// Note that despite the initial uri string skipping the port, the SplitUri decodes and stores the port
+EXPECT_EQ("www.google.com:443", std::format("{}", u.authority));
+std::cerr << std::format("{}", u.authority) << std::endl;
+
+// The "rebuilt" endpoint
+EXPECT_EQ("https://www.google.com/search?q=siddiqsoft#v1", std::format("{}", u));
+std::cerr << std::format("{}", u) << std::endl;
+```
+
+And the corresponding output
+
+```json
+www.google.com
+443
+/search?q=siddiqsoft#v1
+q=siddiqsoft
+v1
+["search"]
+{"q":"siddiqsoft"}
+https...."https"
+www.google.com:443
+https://www.google.com/search?q=siddiqsoft#v1
+```
 
 <hr/>
 
