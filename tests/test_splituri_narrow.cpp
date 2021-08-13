@@ -1,35 +1,35 @@
 /*
-	SplitUri
+    SplitUri
 
-	BSD 3-Clause License
+    BSD 3-Clause License
 
-	Copyright (c) 2021, Siddiq Software LLC
-	All rights reserved.
+    Copyright (c) 2021, Siddiq Software LLC
+    All rights reserved.
 
-	Redistribution and use in source and binary forms, with or without
-	modification, are permitted provided that the following conditions are met:
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
 
-	1. Redistributions of source code must retain the above copyright notice, this
-	list of conditions and the following disclaimer.
+    1. Redistributions of source code must retain the above copyright notice, this
+    list of conditions and the following disclaimer.
 
-	2. Redistributions in binary form must reproduce the above copyright notice,
-	this list of conditions and the following disclaimer in the documentation
-	and/or other materials provided with the distribution.
+    2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
 
-	3. Neither the name of the copyright holder nor the names of its
-	contributors may be used to endorse or promote products derived from
-	this software without specific prior written permission.
+    3. Neither the name of the copyright holder nor the names of its
+    contributors may be used to endorse or promote products derived from
+    this software without specific prior written permission.
 
-	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-	DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-	FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-	DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-	SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-	CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-	OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-	OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+    FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+    DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+    SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+    CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+    OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+    OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
@@ -41,45 +41,6 @@
 #include "nlohmann/json.hpp"
 #include "../src/SplitUri.hpp"
 
-TEST(examples, example_1)
-{
-	using namespace siddiqsoft::literals;
-
-	auto u = "https://www.google.com/search?q=siddiqsoft#v1"_Uri;
-
-	EXPECT_EQ("www.google.com", u.authority.host);
-	std::cerr << u.authority.host << std::endl;
-
-	EXPECT_EQ(443, u.authority.port);
-	std::cerr << u.authority.port << std::endl;
-
-	EXPECT_EQ("/search?q=siddiqsoft#v1", u.urlPart);
-	std::cerr << u.urlPart << std::endl;
-
-	EXPECT_EQ("q=siddiqsoft", u.queryPart);
-	std::cerr << u.queryPart << std::endl;
-
-	EXPECT_EQ("v1", u.fragment);
-	std::cerr << u.fragment << std::endl;
-
-	EXPECT_EQ("search", u.path.at(0));
-	std::cerr << nlohmann::json(u.path).dump() << std::endl;
-
-	EXPECT_EQ("siddiqsoft", u.query.at("q"));
-	std::cerr << nlohmann::json(u.query).dump() << std::endl;
-
-	// Checks that both serializers are available (caught at compile-time)
-	EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, u.scheme);
-	std::cerr << std::format("{}", u.scheme) << "...." << nlohmann::json(u.scheme).dump() << std::endl;
-
-	// Note that despite the initial uri string skipping the port, the SplitUri decodes and stores the port
-	EXPECT_EQ("www.google.com:443", std::format("{}", u.authority));
-	std::cerr << std::format("{}", u.authority) << std::endl;
-
-	// The "rebuilt" endpoint
-	EXPECT_EQ("https://www.google.com/search?q=siddiqsoft#v1", std::format("{}", u));
-	std::cerr << std::format("{}", u) << std::endl;
-}
 
 TEST(helpers_splituri_narrow, test_1)
 {
@@ -100,7 +61,7 @@ TEST(helpers_splituri_narrow, test_1)
 
 TEST(helpers_splituri_narrow, test_2)
 {
-	auto uri = siddiqsoft::SplitUri<std::string>("http://search.msn.com:8080");
+	auto uri = siddiqsoft::SplitUri<char>("http://search.msn.com:8080");
 	EXPECT_EQ("search.msn.com", uri.authority.host);
 	EXPECT_EQ(8080, uri.authority.port);
 	EXPECT_EQ("", uri.urlPart);
@@ -123,7 +84,7 @@ TEST(helpers_splituri_narrow, test_3a)
 
 TEST(helpers_splituri_narrow, test_3b)
 {
-	auto uri = siddiqsoft::SplitUri<std::string>("http://search.msn.com:65536/");
+	auto uri = siddiqsoft::SplitUri<char>("http://search.msn.com:65536/");
 	EXPECT_EQ("search.msn.com", uri.authority.host);
 	EXPECT_EQ(0, uri.authority.port); // max uint16_t is 65535 so anything more will roll it over to 0
 	EXPECT_EQ("/", uri.urlPart);
@@ -134,7 +95,7 @@ TEST(helpers_splituri_narrow, test_3b)
 
 TEST(helpers_splituri_narrow, test_4a)
 {
-	auto uri = siddiqsoft::SplitUri<std::string>("http://m.co");
+	auto uri = siddiqsoft::SplitUri<char>("http://m.co");
 	EXPECT_EQ("m.co", uri.authority.host);
 	EXPECT_EQ(80, uri.authority.port);
 	EXPECT_EQ("", uri.urlPart);
@@ -146,7 +107,7 @@ TEST(helpers_splituri_narrow, test_4a)
 
 TEST(helpers_splituri_narrow, test_4b)
 {
-	auto uri = siddiqsoft::SplitUri<std::string>("https://m.co");
+	auto uri = siddiqsoft::SplitUri<char>("https://m.co");
 	EXPECT_EQ("m.co", uri.authority.host);
 	EXPECT_EQ(443, uri.authority.port);
 	EXPECT_EQ("", uri.urlPart);
@@ -158,7 +119,7 @@ TEST(helpers_splituri_narrow, test_4b)
 
 TEST(helpers_splituri_narrow, test_4c)
 {
-	auto uri = siddiqsoft::SplitUri<std::string>("http://localhost");
+	auto uri = siddiqsoft::SplitUri<char>("http://localhost");
 	EXPECT_EQ("localhost", uri.authority.host);
 	EXPECT_EQ(80, uri.authority.port);
 	EXPECT_EQ("", uri.urlPart);
@@ -170,8 +131,8 @@ TEST(helpers_splituri_narrow, test_4c)
 
 TEST(helpers_splituri_narrow, test_5a)
 {
-	auto uri = siddiqsoft::SplitUri<std::string>("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
-	                                             "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
+	auto uri = siddiqsoft::SplitUri<char>("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
+	                                      "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
 	EXPECT_EQ("<ServerName>", uri.authority.host);
 	EXPECT_EQ(80, uri.authority.port);
 	EXPECT_EQ("/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5",
@@ -187,8 +148,8 @@ TEST(helpers_splituri_narrow, test_5a)
 
 TEST(helpers_splituri_narrow, test_5b)
 {
-	auto uri = siddiqsoft::SplitUri<std::string>("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
-	                                             "model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5");
+	auto uri = siddiqsoft::SplitUri<char>("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
+	                                      "model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5");
 	EXPECT_EQ("<ServerName>", uri.authority.host);
 	EXPECT_EQ(80, uri.authority.port);
 	EXPECT_EQ("/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5",
@@ -204,8 +165,7 @@ TEST(helpers_splituri_narrow, test_5b)
 
 TEST(helpers_splituri_narrow, test_6a)
 {
-	auto uri = siddiqsoft::SplitUri<std::string>(
-			"https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top");
+	auto uri = siddiqsoft::SplitUri<char>("https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top");
 	EXPECT_EQ("www.example.com", uri.authority.host);
 	EXPECT_EQ("john.doe", uri.authority.userInfo);
 	EXPECT_EQ(123, uri.authority.port);
@@ -299,7 +259,7 @@ TEST(helpers_splituri_narrow, test8a)
 	using namespace std;
 
 	auto uri = siddiqsoft::SplitUri(
-			"https://www.bing.com/search?q=siddiqsoft&go=Search&qs=n&form=QBRE&sp=-1&pq=siddiqsoft&sc=8-10&sk=&cvid=90463834E5F74231B327D1158C16C5EE"s);
+	        "https://www.bing.com/search?q=siddiqsoft&go=Search&qs=n&form=QBRE&sp=-1&pq=siddiqsoft&sc=8-10&sk=&cvid=90463834E5F74231B327D1158C16C5EE"s);
 	EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, uri.scheme);
 	EXPECT_EQ("www.bing.com", uri.authority.host);
 	EXPECT_EQ(443, uri.authority.port);
@@ -409,12 +369,60 @@ TEST(helpers_splituri_narrow, test_9d)
 	std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
 }
 
+
+TEST(helpers_splituri_narrow, test_10)
+{
+	using namespace siddiqsoft::literals;
+
+	auto u = "https://www.google.com/search/?emptyFlag&Char{55}&q=siddiqsoft#v1"_Uri;
+
+	EXPECT_EQ("www.google.com", u.authority.host);
+	std::cerr << u.authority.host << std::endl;
+
+	EXPECT_EQ(443, u.authority.port);
+	std::cerr << u.authority.port << std::endl;
+
+	EXPECT_EQ("/search/?emptyFlag&Char{55}&q=siddiqsoft#v1", u.urlPart);
+	std::cerr << u.urlPart << std::endl;
+
+	EXPECT_EQ("emptyFlag&Char{55}&q=siddiqsoft", u.queryPart);
+	std::cerr << u.queryPart << std::endl;
+
+	EXPECT_EQ("v1", u.fragment);
+	std::cerr << u.fragment << std::endl;
+
+	EXPECT_EQ(1, u.path.size());
+	EXPECT_EQ("search", u.path.at(0));
+	std::cerr << nlohmann::json(u.path).dump() << std::endl;
+
+	EXPECT_EQ(3, u.query.size());
+	EXPECT_EQ("siddiqsoft", u.query.at("q"));
+	ASSERT_TRUE(u.query.contains("emptyFlag"));
+	ASSERT_TRUE(u.query.contains("Char{55}"));
+	EXPECT_TRUE(u.query.at("emptyFlag").empty());
+	EXPECT_TRUE(u.query.at("Char{55}").empty());
+	std::cerr << nlohmann::json(u.query).dump() << std::endl;
+
+	// Checks that both serializers are available (caught at compile-time)
+	EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, u.scheme);
+	std::cerr << std::format("{}", u.scheme) << "...." << nlohmann::json(u.scheme).dump() << std::endl;
+
+	// Note that despite the initial uri string skipping the port, the SplitUri decodes and stores the port
+	EXPECT_EQ("www.google.com:443", std::format("{}", u.authority));
+	std::cerr << std::format("{}", u.authority) << std::endl;
+
+	// The "rebuilt" endpoint
+	EXPECT_EQ("https://www.google.com/search/?emptyFlag&Char{55}&q=siddiqsoft#v1", std::format("{}", u));
+	std::cerr << std::format("{}", u) << std::endl;
+}
+
+
 TEST(helpers_splituri_narrow, test_99a)
 {
 	using namespace std;
 
 	auto endpoint {
-			"https://www.bing.com/?toWww=1&redig=https://www.bing.com/search?q=117244609&form=QBLH&sp=-1&pq=19983711434&sc=0-11&qs=n&sk=&cvid=46160ADDF1247EBA6FD76A4F6314D8B"s};
+	        "https://www.bing.com/?toWww=1&redig=https://www.bing.com/search?q=117244609&form=QBLH&sp=-1&pq=19983711434&sc=0-11&qs=n&sk=&cvid=46160ADDF1247EBA6FD76A4F6314D8B"s};
 	auto uri = siddiqsoft::SplitUri(endpoint);
 	EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, uri.scheme);
 	EXPECT_EQ("www.bing.com", uri.authority.host);
