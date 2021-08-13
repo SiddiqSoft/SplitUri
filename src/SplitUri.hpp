@@ -192,8 +192,8 @@ namespace siddiqsoft
 		Unknown
 	};
 
-	template <typename T>
-	const T to_string(const UriScheme& s)
+	template <typename CharT>
+	const std::basic_string<CharT> to_string(const UriScheme& s)
 	{
 		static const std::map<UriScheme, std::tuple<std::string, std::wstring>> UriSchemeMap {
 		        {UriScheme::WebHttp, {"http", L"http"}},
@@ -206,7 +206,7 @@ namespace siddiqsoft
 		        {UriScheme::Urn, {"urn", L"urn"}},
 		        {UriScheme::Unknown, {"Unknown", L"Unknown"}}};
 
-		return std::get<T>(UriSchemeMap.at(s));
+		return std::get<std::basic_string<CharT>>(UriSchemeMap.at(s));
 	}
 
 	/// @brief Serializer for JSON for UriScheme
@@ -238,23 +238,13 @@ namespace siddiqsoft
 
 		operator std::basic_string<CharT>() const
 		{
-			return std::format(_NORW(CharT, "{}://{}{}"), to_string<std::basic_string<CharT>>(scheme), authority.host, urlPart);
+			return std::format(_NORW(CharT, "{}://{}{}"), to_string<CharT>(scheme), authority.host, urlPart);
 		}
 	};
 
-
-	static void to_json(nlohmann::json& dest, const Uri<char, AuthorityHttp<char>>& s)
-	{
-		dest["scheme"]    = s.scheme;
-		dest["authority"] = s.authority;
-		dest["path"]      = s.path;
-		dest["query"]     = s.query;
-		dest["fragment"]  = s.fragment;
-		dest["urlPart"]   = s.urlPart;
-		dest["queryPart"] = s.queryPart;
-	}
-
-
+	/// @brief Json serializer for wstring vector
+	/// @param dest 
+	/// @param s stl vector of wstring
 	static void to_json(nlohmann::json& dest, const std::vector<std::wstring>& s)
 	{
 		thread_local std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
@@ -264,7 +254,9 @@ namespace siddiqsoft
 		}
 	}
 
-
+	/// @brief Json serializer for wstring map
+	/// @param dest 
+	/// @param s stl map of wstring
 	static void to_json(nlohmann::json& dest, const std::map<std::wstring, std::wstring>& s)
 	{
 		thread_local std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
@@ -274,25 +266,42 @@ namespace siddiqsoft
 		}
 	}
 
-
-	static void to_json(nlohmann::json& dest, const Uri<wchar_t, AuthorityHttp<wchar_t>>& s)
+	/// @brief Json serializer for the Uri object
+	/// @tparam CharT Must be char or wchar_t
+	/// @param dest 
+	/// @param s The Uri object
+	template <typename CharT>
+		requires std::same_as<CharT, char> || std::same_as<CharT, wchar_t>
+	static void to_json(nlohmann::json& dest, const Uri<CharT, AuthorityHttp<CharT>>& s)
 	{
-		thread_local std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		dest["scheme"] = s.scheme;
 
-		dest["scheme"]    = s.scheme;
-		dest["authority"] = converter.to_bytes(s.authority);
-		dest["fragment"]  = converter.to_bytes(s.fragment);
-		dest["urlPart"]   = converter.to_bytes(s.urlPart);
-		dest["queryPart"] = converter.to_bytes(s.queryPart);
-
-		// We cannot delegate to to_json as it mis-interprets the map<std::wstring,std::wstring>
-		for (auto& [k, v] : s.query) {
-			dest["query"][converter.to_bytes(k)] = converter.to_bytes(v);
+		if constexpr (std::is_same_v<CharT, char>) {
+			dest["authority"] = s.authority;
+			dest["path"]      = s.path;
+			dest["query"]     = s.query;
+			dest["fragment"]  = s.fragment;
+			dest["urlPart"]   = s.urlPart;
+			dest["queryPart"] = s.queryPart;
 		}
 
-		// We cannot delegate to to_json as it mis-interprets the vector<std::wstring> as std::array
-		for (auto& i : s.path) {
-			dest["path"].push_back(converter.to_bytes(i));
+		if constexpr (std::is_same_v<CharT, wchar_t>) {
+			thread_local std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+
+			dest["authority"] = converter.to_bytes(s.authority);
+			dest["fragment"]  = converter.to_bytes(s.fragment);
+			dest["urlPart"]   = converter.to_bytes(s.urlPart);
+			dest["queryPart"] = converter.to_bytes(s.queryPart);
+
+			// We cannot delegate to to_json as it mis-interprets the map<std::wstring,std::wstring>
+			for (auto& [k, v] : s.query) {
+				dest["query"][converter.to_bytes(k)] = converter.to_bytes(v);
+			}
+
+			// We cannot delegate to to_json as it mis-interprets the vector<std::wstring> as std::array
+			for (auto& i : s.path) {
+				dest["path"].push_back(converter.to_bytes(i));
+			}
 		}
 	}
 
@@ -428,7 +437,7 @@ namespace siddiqsoft
 		/// @return Uri<string,AuthorityHttp> object
 		static siddiqsoft::Uri<char, siddiqsoft::AuthorityHttp<char>> operator"" _Uri(const char* src, size_t sz)
 		{
-			return siddiqsoft::SplitUri<char, siddiqsoft::AuthorityHttp<char>>({src, sz});
+			return siddiqsoft::SplitUri<char, siddiqsoft::AuthorityHttp<char>>(std::string(src, sz));
 		}
 
 		/// @brief Literal operator `_Uri` for std::wstring
@@ -437,7 +446,7 @@ namespace siddiqsoft
 		/// @return Uri<wstring,AuthorityHttp> object
 		static siddiqsoft::Uri<wchar_t, siddiqsoft::AuthorityHttp<wchar_t>> operator"" _Uri(const wchar_t* src, size_t sz)
 		{
-			return siddiqsoft::SplitUri<wchar_t, siddiqsoft::AuthorityHttp<wchar_t>>({src, sz});
+			return siddiqsoft::SplitUri<wchar_t, siddiqsoft::AuthorityHttp<wchar_t>>(std::wstring(src, sz));
 		}
 	} // namespace literals
 } // namespace siddiqsoft
@@ -453,73 +462,59 @@ struct std::formatter<siddiqsoft::AuthorityHttp<CharT>, CharT> : std::formatter<
 	}
 };
 
-//
-// template <>
-// struct std::formatter<siddiqsoft::AuthorityHttp<std::wstring>, wchar_t> : std::formatter<std::wstring, wchar_t>
-//{
-//	auto format(const siddiqsoft::AuthorityHttp<std::wstring>& sv, std::wformat_context& ctx)
-//	{
-//		return std::formatter<std::wstring, wchar_t>::format(std::wstring(sv), ctx);
-//	}
-//};
 
-
-template <class T>
-struct std::formatter<siddiqsoft::AuthorityLdap<T>> : std::formatter<T>
+template <typename CharT>
+struct std::formatter<siddiqsoft::AuthorityLdap<CharT>> : std::formatter<std::basic_string<CharT>, CharT>
 {
-	auto format(const siddiqsoft::AuthorityLdap<T>& sv, std::format_context& ctx)
+	template <class FC>
+	auto format(const siddiqsoft::AuthorityLdap<CharT>& sv, FC& ctx)
 	{
-		return std::formatter<T>::format(T(sv), ctx);
+		return std::formatter<std::basic_string<CharT>, CharT>::format(std::basic_string<CharT>(sv), ctx);
 	}
 };
 
 
-template <class T>
-struct std::formatter<siddiqsoft::AuthorityNone<T>> : std::formatter<T>
+template <typename CharT>
+struct std::formatter<siddiqsoft::AuthorityNone<CharT>> : std::formatter<std::basic_string<CharT>, CharT>
 {
-	auto format(const siddiqsoft::AuthorityNone<T>& sv, std::format_context& ctx)
+	template <class FC>
+	auto format(const siddiqsoft::AuthorityNone<CharT>& sv, FC& ctx)
 	{
-		return std::formatter<T>::format(T(sv), ctx);
+		return std::formatter<std::basic_string<CharT>, CharT>::format(std::basic_string<CharT>(sv), ctx);
 	}
 };
 
 
-template <class T>
-struct std::formatter<std::variant<siddiqsoft::AuthorityHttp<T>, siddiqsoft::AuthorityLdap<T>, siddiqsoft::AuthorityNone<T>>>
-    : std::formatter<T>
+template <typename CharT>
+struct std::formatter<
+        std::variant<siddiqsoft::AuthorityHttp<CharT>, siddiqsoft::AuthorityLdap<CharT>, siddiqsoft::AuthorityNone<CharT>>>
+    : std::formatter<std::basic_string<CharT>, CharT>
 {
-	auto format(const std::variant<siddiqsoft::AuthorityHttp<T>, siddiqsoft::AuthorityLdap<T>, siddiqsoft::AuthorityNone<T>>& sv,
-	            std::format_context&                                                                                          ctx)
+	template <class FC>
+	auto
+	format(const std::variant<siddiqsoft::AuthorityHttp<CharT>, siddiqsoft::AuthorityLdap<CharT>, siddiqsoft::AuthorityNone<CharT>>&
+	               sv,
+	       FC&     ctx)
 	{
-		if (std::holds_alternative<siddiqsoft::AuthorityHttp<T>>(sv))
-			return std::formatter<T>::format(sv.get<siddiqsoft::AuthorityHttp<T>>(), ctx);
-		else if (std::holds_alternative<siddiqsoft::AuthorityLdap<T>>(sv))
-			return std::formatter<T>::format(sv.get<siddiqsoft::AuthorityLdap<T>>(), ctx);
+		if (std::holds_alternative<siddiqsoft::AuthorityHttp<CharT>>(sv))
+			return std::formatter<CharT>::format(sv.get<siddiqsoft::AuthorityHttp<CharT>>(), ctx);
+		else if (std::holds_alternative<siddiqsoft::AuthorityLdap<CharT>>(sv))
+			return std::formatter<CharT>::format(sv.get<siddiqsoft::AuthorityLdap<CharT>>(), ctx);
 
-		return std::formatter<T>::format(sv.get<siddiqsoft::AuthorityNone<T>>(), ctx);
+		return std::formatter<CharT>::format(sv.get<siddiqsoft::AuthorityNone<CharT>>(), ctx);
 	}
 };
 
 /// @brief Explicit implementation for UriScheme which is an enum class to std::string
-template <>
-struct std::formatter<siddiqsoft::UriScheme, char> : std::formatter<std::string, char>
+template <typename CharT>
+struct std::formatter<siddiqsoft::UriScheme, CharT> : std::formatter<std::basic_string<CharT>, CharT>
 {
-	auto format(const siddiqsoft::UriScheme& s, std::format_context& fc)
+	template <class FC>
+	auto format(const siddiqsoft::UriScheme& s, FC& fc)
 	{
-		return std::formatter<std::string, char>::format(siddiqsoft::to_string<std::string>(s), fc);
+		return std::formatter<std::basic_string<CharT>, CharT>::format(siddiqsoft::to_string<CharT>(s), fc);
 	}
 };
-
-/// @brief Explicit implementation for UriScheme which is an enum class to std::wstring
-template <>
-struct std::formatter<siddiqsoft::UriScheme, wchar_t> : std::formatter<std::wstring, wchar_t>
-{
-	auto format(const siddiqsoft::UriScheme& s, std::wformat_context& fc)
-	{
-		return std::formatter<std::wstring, wchar_t>::format(siddiqsoft::to_string<std::wstring>(s), fc);
-	}
-};
-
 
 template <typename CharT>
 struct std::formatter<siddiqsoft::Uri<CharT, siddiqsoft::AuthorityHttp<CharT>>, CharT>
@@ -531,17 +526,4 @@ struct std::formatter<siddiqsoft::Uri<CharT, siddiqsoft::AuthorityHttp<CharT>>, 
 		return std::formatter<std::basic_string<CharT>, CharT>::format(u, ctx);
 	}
 };
-
-
-// template <>
-// struct std::formatter<siddiqsoft::Uri<std::wstring, siddiqsoft::AuthorityHttp<std::wstring>>, wchar_t>
-//    : std::formatter<std::wstring, wchar_t>
-//{
-//	auto format(const siddiqsoft::Uri<std::wstring, siddiqsoft::AuthorityHttp<std::wstring>>& u, std::wformat_context& ctx)
-//	{
-//		return std::formatter<std::wstring, wchar_t>::format(u, ctx);
-//	}
-//};
-
-
 #endif // !SPLITURI_HPP
