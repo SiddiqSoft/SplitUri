@@ -17,8 +17,8 @@ Parse the Uri for HTTP resources with support for `format` and `nlohmann.json`.
 While there are many, many libraries available, the goal of this implementation is to make *usage* easy along with a modern design.
 
 ## Features
-- C++20 compliant toolchain: We use `<concepts>`, `<format>`.
-- The `nlohmann.json` library.
+- Literals support so you can use `auto u= "https://www.siddiqsoft.com/"_Uri;`
+- Formatters for `std::format` as well as serializers for `nlohmann.json` library.
 - Support for `std::string` and `std::wstring`
 - The build and tests are for Visual Studio 2019 under x64.
 
