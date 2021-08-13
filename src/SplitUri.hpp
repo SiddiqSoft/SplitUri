@@ -192,8 +192,8 @@ namespace siddiqsoft
 		Unknown
 	};
 
-	template <typename T>
-	const T to_string(const UriScheme& s)
+	template <typename CharT>
+	const std::basic_string<CharT> to_string(const UriScheme& s)
 	{
 		static const std::map<UriScheme, std::tuple<std::string, std::wstring>> UriSchemeMap {
 		        {UriScheme::WebHttp, {"http", L"http"}},
@@ -206,7 +206,7 @@ namespace siddiqsoft
 		        {UriScheme::Urn, {"urn", L"urn"}},
 		        {UriScheme::Unknown, {"Unknown", L"Unknown"}}};
 
-		return std::get<T>(UriSchemeMap.at(s));
+		return std::get<std::basic_string<CharT>>(UriSchemeMap.at(s));
 	}
 
 	/// @brief Serializer for JSON for UriScheme
@@ -453,73 +453,59 @@ struct std::formatter<siddiqsoft::AuthorityHttp<CharT>, CharT> : std::formatter<
 	}
 };
 
-//
-// template <>
-// struct std::formatter<siddiqsoft::AuthorityHttp<std::wstring>, wchar_t> : std::formatter<std::wstring, wchar_t>
-//{
-//	auto format(const siddiqsoft::AuthorityHttp<std::wstring>& sv, std::wformat_context& ctx)
-//	{
-//		return std::formatter<std::wstring, wchar_t>::format(std::wstring(sv), ctx);
-//	}
-//};
 
-
-template <class T>
-struct std::formatter<siddiqsoft::AuthorityLdap<T>> : std::formatter<T>
+template <typename CharT>
+struct std::formatter<siddiqsoft::AuthorityLdap<CharT>> : std::formatter<std::basic_string<CharT>, CharT>
 {
-	auto format(const siddiqsoft::AuthorityLdap<T>& sv, std::format_context& ctx)
+	template <class FC>
+	auto format(const siddiqsoft::AuthorityLdap<CharT>& sv, FC& ctx)
 	{
-		return std::formatter<T>::format(T(sv), ctx);
+		return std::formatter<std::basic_string<CharT>, CharT>::format(std::basic_string<CharT>(sv), ctx);
 	}
 };
 
 
-template <class T>
-struct std::formatter<siddiqsoft::AuthorityNone<T>> : std::formatter<T>
+template <typename CharT>
+struct std::formatter<siddiqsoft::AuthorityNone<CharT>> : std::formatter<std::basic_string<CharT>, CharT>
 {
-	auto format(const siddiqsoft::AuthorityNone<T>& sv, std::format_context& ctx)
+	template <class FC>
+	auto format(const siddiqsoft::AuthorityNone<CharT>& sv, FC& ctx)
 	{
-		return std::formatter<T>::format(T(sv), ctx);
+		return std::formatter<std::basic_string<CharT>, CharT>::format(std::basic_string<CharT>(sv), ctx);
 	}
 };
 
 
-template <class T>
-struct std::formatter<std::variant<siddiqsoft::AuthorityHttp<T>, siddiqsoft::AuthorityLdap<T>, siddiqsoft::AuthorityNone<T>>>
-    : std::formatter<T>
+template <typename CharT>
+struct std::formatter<
+        std::variant<siddiqsoft::AuthorityHttp<CharT>, siddiqsoft::AuthorityLdap<CharT>, siddiqsoft::AuthorityNone<CharT>>>
+    : std::formatter<std::basic_string<CharT>, CharT>
 {
-	auto format(const std::variant<siddiqsoft::AuthorityHttp<T>, siddiqsoft::AuthorityLdap<T>, siddiqsoft::AuthorityNone<T>>& sv,
-	            std::format_context&                                                                                          ctx)
+	template <class FC>
+	auto
+	format(const std::variant<siddiqsoft::AuthorityHttp<CharT>, siddiqsoft::AuthorityLdap<CharT>, siddiqsoft::AuthorityNone<CharT>>&
+	               sv,
+	       FC&     ctx)
 	{
-		if (std::holds_alternative<siddiqsoft::AuthorityHttp<T>>(sv))
-			return std::formatter<T>::format(sv.get<siddiqsoft::AuthorityHttp<T>>(), ctx);
-		else if (std::holds_alternative<siddiqsoft::AuthorityLdap<T>>(sv))
-			return std::formatter<T>::format(sv.get<siddiqsoft::AuthorityLdap<T>>(), ctx);
+		if (std::holds_alternative<siddiqsoft::AuthorityHttp<CharT>>(sv))
+			return std::formatter<CharT>::format(sv.get<siddiqsoft::AuthorityHttp<CharT>>(), ctx);
+		else if (std::holds_alternative<siddiqsoft::AuthorityLdap<CharT>>(sv))
+			return std::formatter<CharT>::format(sv.get<siddiqsoft::AuthorityLdap<CharT>>(), ctx);
 
-		return std::formatter<T>::format(sv.get<siddiqsoft::AuthorityNone<T>>(), ctx);
+		return std::formatter<CharT>::format(sv.get<siddiqsoft::AuthorityNone<CharT>>(), ctx);
 	}
 };
 
 /// @brief Explicit implementation for UriScheme which is an enum class to std::string
-template <>
-struct std::formatter<siddiqsoft::UriScheme, char> : std::formatter<std::string, char>
+template <typename CharT>
+struct std::formatter<siddiqsoft::UriScheme, CharT> : std::formatter<std::basic_string<CharT>, CharT>
 {
-	auto format(const siddiqsoft::UriScheme& s, std::format_context& fc)
+	template <class FC>
+	auto format(const siddiqsoft::UriScheme& s, FC& fc)
 	{
-		return std::formatter<std::string, char>::format(siddiqsoft::to_string<std::string>(s), fc);
+		return std::formatter<std::basic_string<CharT>, CharT>::format(siddiqsoft::to_string<CharT>(s), fc);
 	}
 };
-
-/// @brief Explicit implementation for UriScheme which is an enum class to std::wstring
-template <>
-struct std::formatter<siddiqsoft::UriScheme, wchar_t> : std::formatter<std::wstring, wchar_t>
-{
-	auto format(const siddiqsoft::UriScheme& s, std::wformat_context& fc)
-	{
-		return std::formatter<std::wstring, wchar_t>::format(siddiqsoft::to_string<std::wstring>(s), fc);
-	}
-};
-
 
 template <typename CharT>
 struct std::formatter<siddiqsoft::Uri<CharT, siddiqsoft::AuthorityHttp<CharT>>, CharT>
@@ -531,17 +517,4 @@ struct std::formatter<siddiqsoft::Uri<CharT, siddiqsoft::AuthorityHttp<CharT>>, 
 		return std::formatter<std::basic_string<CharT>, CharT>::format(u, ctx);
 	}
 };
-
-
-// template <>
-// struct std::formatter<siddiqsoft::Uri<std::wstring, siddiqsoft::AuthorityHttp<std::wstring>>, wchar_t>
-//    : std::formatter<std::wstring, wchar_t>
-//{
-//	auto format(const siddiqsoft::Uri<std::wstring, siddiqsoft::AuthorityHttp<std::wstring>>& u, std::wformat_context& ctx)
-//	{
-//		return std::formatter<std::wstring, wchar_t>::format(u, ctx);
-//	}
-//};
-
-
 #endif // !SPLITURI_HPP
