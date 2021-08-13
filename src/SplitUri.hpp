@@ -238,23 +238,13 @@ namespace siddiqsoft
 
 		operator std::basic_string<CharT>() const
 		{
-			return std::format(_NORW(CharT, "{}://{}{}"), to_string<std::basic_string<CharT>>(scheme), authority.host, urlPart);
+			return std::format(_NORW(CharT, "{}://{}{}"), to_string<CharT>(scheme), authority.host, urlPart);
 		}
 	};
 
-
-	static void to_json(nlohmann::json& dest, const Uri<char, AuthorityHttp<char>>& s)
-	{
-		dest["scheme"]    = s.scheme;
-		dest["authority"] = s.authority;
-		dest["path"]      = s.path;
-		dest["query"]     = s.query;
-		dest["fragment"]  = s.fragment;
-		dest["urlPart"]   = s.urlPart;
-		dest["queryPart"] = s.queryPart;
-	}
-
-
+	/// @brief Json serializer for wstring vector
+	/// @param dest 
+	/// @param s stl vector of wstring
 	static void to_json(nlohmann::json& dest, const std::vector<std::wstring>& s)
 	{
 		thread_local std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
@@ -264,7 +254,9 @@ namespace siddiqsoft
 		}
 	}
 
-
+	/// @brief Json serializer for wstring map
+	/// @param dest 
+	/// @param s stl map of wstring
 	static void to_json(nlohmann::json& dest, const std::map<std::wstring, std::wstring>& s)
 	{
 		thread_local std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
@@ -274,25 +266,42 @@ namespace siddiqsoft
 		}
 	}
 
-
-	static void to_json(nlohmann::json& dest, const Uri<wchar_t, AuthorityHttp<wchar_t>>& s)
+	/// @brief Json serializer for the Uri object
+	/// @tparam CharT Must be char or wchar_t
+	/// @param dest 
+	/// @param s The Uri object
+	template <typename CharT>
+		requires std::same_as<CharT, char> || std::same_as<CharT, wchar_t>
+	static void to_json(nlohmann::json& dest, const Uri<CharT, AuthorityHttp<CharT>>& s)
 	{
-		thread_local std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+		dest["scheme"] = s.scheme;
 
-		dest["scheme"]    = s.scheme;
-		dest["authority"] = converter.to_bytes(s.authority);
-		dest["fragment"]  = converter.to_bytes(s.fragment);
-		dest["urlPart"]   = converter.to_bytes(s.urlPart);
-		dest["queryPart"] = converter.to_bytes(s.queryPart);
-
-		// We cannot delegate to to_json as it mis-interprets the map<std::wstring,std::wstring>
-		for (auto& [k, v] : s.query) {
-			dest["query"][converter.to_bytes(k)] = converter.to_bytes(v);
+		if constexpr (std::is_same_v<CharT, char>) {
+			dest["authority"] = s.authority;
+			dest["path"]      = s.path;
+			dest["query"]     = s.query;
+			dest["fragment"]  = s.fragment;
+			dest["urlPart"]   = s.urlPart;
+			dest["queryPart"] = s.queryPart;
 		}
 
-		// We cannot delegate to to_json as it mis-interprets the vector<std::wstring> as std::array
-		for (auto& i : s.path) {
-			dest["path"].push_back(converter.to_bytes(i));
+		if constexpr (std::is_same_v<CharT, wchar_t>) {
+			thread_local std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+
+			dest["authority"] = converter.to_bytes(s.authority);
+			dest["fragment"]  = converter.to_bytes(s.fragment);
+			dest["urlPart"]   = converter.to_bytes(s.urlPart);
+			dest["queryPart"] = converter.to_bytes(s.queryPart);
+
+			// We cannot delegate to to_json as it mis-interprets the map<std::wstring,std::wstring>
+			for (auto& [k, v] : s.query) {
+				dest["query"][converter.to_bytes(k)] = converter.to_bytes(v);
+			}
+
+			// We cannot delegate to to_json as it mis-interprets the vector<std::wstring> as std::array
+			for (auto& i : s.path) {
+				dest["path"].push_back(converter.to_bytes(i));
+			}
 		}
 	}
 
@@ -428,7 +437,7 @@ namespace siddiqsoft
 		/// @return Uri<string,AuthorityHttp> object
 		static siddiqsoft::Uri<char, siddiqsoft::AuthorityHttp<char>> operator"" _Uri(const char* src, size_t sz)
 		{
-			return siddiqsoft::SplitUri<char, siddiqsoft::AuthorityHttp<char>>({src, sz});
+			return siddiqsoft::SplitUri<char, siddiqsoft::AuthorityHttp<char>>(std::string(src, sz));
 		}
 
 		/// @brief Literal operator `_Uri` for std::wstring
@@ -437,7 +446,7 @@ namespace siddiqsoft
 		/// @return Uri<wstring,AuthorityHttp> object
 		static siddiqsoft::Uri<wchar_t, siddiqsoft::AuthorityHttp<wchar_t>> operator"" _Uri(const wchar_t* src, size_t sz)
 		{
-			return siddiqsoft::SplitUri<wchar_t, siddiqsoft::AuthorityHttp<wchar_t>>({src, sz});
+			return siddiqsoft::SplitUri<wchar_t, siddiqsoft::AuthorityHttp<wchar_t>>(std::wstring(src, sz));
 		}
 	} // namespace literals
 } // namespace siddiqsoft
