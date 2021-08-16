@@ -236,6 +236,11 @@ namespace siddiqsoft
         std::basic_string<CharT>                                     urlPart {};   // contains the "balance" post Authority section
         std::basic_string<CharT>                                     queryPart {}; // contains the "query" part
 
+
+        /// @brief Default constructor
+        Uri() {};
+
+
         /// @brief Constructor parses out the uri given the argument
         /// @param endpoint std::string or std::wstring
         Uri(const std::basic_string<CharT>& aEndpoint)
