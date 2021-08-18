@@ -379,7 +379,11 @@ namespace siddiqsoft
         /// @brief Operator rebuilds the Uri string
         operator std::basic_string<CharT>() const
         {
-            return std::format(_NORW(CharT, "{}://{}{}"), to_string<CharT>(scheme), authority.host, urlPart);
+            return std::format(_NORW(CharT, "{}://{}{}{}"),
+                               to_string<CharT>(scheme),
+                               authority.host,
+                               (authority.port > 0) ? std::format(_NORW(CharT, ":{}"), authority.port) : _NORW(CharT, ""),
+                               urlPart);
         }
 
 
