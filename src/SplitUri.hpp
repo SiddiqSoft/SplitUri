@@ -366,11 +366,14 @@ namespace siddiqsoft
                     // Parse the path into convenience vector of path elements
                     if (!pathSegment.empty()) parsePathElements(pathSegment, path);
 
-                    queryPart = aEndpoint.substr(posQueryPart + 1,
-                                                 posFragment != std::string::npos ? (posFragment) - (posQueryPart + 1)
-                                                                                  : std::string::npos);
-                    // Parse the query elements into a map
-                    if (!queryPart.empty()) parseQueryElements(queryPart, query);
+                    // Parse the query part if present
+                    if (posQueryPart != std::string::npos) {
+                        queryPart = aEndpoint.substr(posQueryPart + 1,
+                                                     posFragment != std::string::npos ? (posFragment) - (posQueryPart + 1)
+                                                                                      : std::string::npos);
+                        // Parse the query elements into a map
+                        if (!queryPart.empty()) parseQueryElements(queryPart, query);
+                    }
                 }
             }
         }

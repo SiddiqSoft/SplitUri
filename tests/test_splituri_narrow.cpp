@@ -66,7 +66,8 @@ TEST(helpers_splituri_narrow, test_1b)
     auto uri = "https://YOURDBNAME.documents.azure.com:443/"_Uri;
     EXPECT_EQ("YOURDBNAME.documents.azure.com", uri.authority.host);
     EXPECT_EQ(443, uri.authority.port);
-
+    EXPECT_EQ("/", uri.urlPart);
+    EXPECT_EQ("", uri.queryPart);
     EXPECT_EQ("https://YOURDBNAME.documents.azure.com:443/", std::string(uri));
 }
 
@@ -77,7 +78,8 @@ TEST(helpers_splituri_narrow, test_1c)
     auto uri = "https://YOURDBNAME.documents.azure.com:1443/"_Uri;
     EXPECT_EQ("YOURDBNAME.documents.azure.com", uri.authority.host);
     EXPECT_EQ(1443, uri.authority.port);
-
+    EXPECT_EQ("/", uri.urlPart);
+    EXPECT_EQ("", uri.queryPart);
     EXPECT_EQ("https://YOURDBNAME.documents.azure.com:1443/", std::string(uri));
 }
 
