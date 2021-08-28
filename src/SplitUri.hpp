@@ -53,6 +53,7 @@
 
 namespace siddiqsoft
 {
+#if !defined(_NORW)
     /// @brief In support of the macro NORW which allows us to declare/use narrow/wide strings as needed. Plucked from the MS stl
     /// implementation
     template <class _CharT>
@@ -67,7 +68,7 @@ namespace siddiqsoft
         }
     }
 #define _NORW(_CharT, _Literal) (NorW<_CharT>(_Literal, L##_Literal))
-
+#endif
 
     /*
         https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Syntax
@@ -272,16 +273,16 @@ namespace siddiqsoft
             /// @return map of strings
             auto parseQueryElements = [](const std::basic_string<CharT>&                               s,
                                          std::map<std::basic_string<CharT>, std::basic_string<CharT>>& ret) -> void {
-                size_t     i    = 0;
-                const auto slen = s.length();
-                while (i < slen && i != std::string::npos) {
+                size_t       i    = 0;
+                const size_t slen = s.length();
+                while ((i < slen) && i != std::string::npos) {
                     // Find the section delimited by & or end of string
-                    auto endOfSection = s.find_first_of(_NORW(CharT, "&"), i);
+                    size_t endOfSection = s.find_first_of(_NORW(CharT, "&"), i);
                     // If we reach the end then the sectionLen is the length of source string - i
-                    auto sectionLen = endOfSection == std::string::npos ? slen - i : endOfSection - i;
-                    auto splitPos   = s.find_first_of(_NORW(CharT, "="), i);
-                    auto keyLen     = 0;
-                    auto valLen     = 0;
+                    size_t sectionLen = endOfSection == std::string::npos ? slen - i : endOfSection - i;
+                    size_t splitPos   = s.find_first_of(_NORW(CharT, "="), i);
+                    size_t keyLen     = 0;
+                    size_t valLen     = 0;
                     // Guard against cases where we do not have splitter
                     if (splitPos >= endOfSection) {
                         splitPos = endOfSection;
