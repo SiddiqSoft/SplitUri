@@ -108,7 +108,6 @@ template <class CharT = char, class Auth = AuthorityHttp<CharT>>
 Uri<CharT, Auth> static SplitUri(const std::basic_string<CharT>& aEndpoint);
 ```
 
-
 <hr/>
 
 # Roadmap

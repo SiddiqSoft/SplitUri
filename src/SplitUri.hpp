@@ -383,50 +383,18 @@ namespace siddiqsoft
         /// @brief Operator rebuilds the Uri string
         operator std::basic_string<CharT>() const
         {
+            return string();
+        }
+
+        /// @brief Rebuild the Uri string
+        /// @return Uri string of desired type (std::string or std::wstring)
+        const std::basic_string<CharT> string() const
+        {
             return std::format(_NORW(CharT, "{}://{}{}{}"),
                                to_string<CharT>(scheme),
                                authority.host,
                                (authority.port > 0) ? std::format(_NORW(CharT, ":{}"), authority.port) : _NORW(CharT, ""),
                                urlPart);
-        }
-
-
-        /// @brief Helper to encode the given string in context of the HTTP requirement
-        /// @param s Source string
-        /// @return Encoded string
-        static std::basic_string<CharT> urlEncode(const std::basic_string<CharT>& s)
-        {
-            std::basic_string<CharT> retOutput {};
-            std::ranges::for_each(s, [&retOutput](auto ch) {
-                switch (ch) {
-                    case _NORW(CharT, '%'): retOutput += _NORW(CharT, "%25"); break;
-                    case _NORW(CharT, ' '): retOutput += _NORW(CharT, "%20"); break;
-                    case _NORW(CharT, '&'): retOutput += _NORW(CharT, "%26"); break;
-                    case _NORW(CharT, '<'): retOutput += _NORW(CharT, "%3c"); break;
-                    case _NORW(CharT, '>'): retOutput += _NORW(CharT, "%3e"); break;
-                    case _NORW(CharT, '{'): retOutput += _NORW(CharT, "%7b"); break;
-                    case _NORW(CharT, '}'): retOutput += _NORW(CharT, "%7d"); break;
-                    case _NORW(CharT, '\''): retOutput += _NORW(CharT, "%27"); break;
-                    case _NORW(CharT, '\"'): retOutput += _NORW(CharT, "%22"); break;
-                    case _NORW(CharT, '/'): retOutput += _NORW(CharT, "%2f"); break;
-                    case _NORW(CharT, '\\'): retOutput += _NORW(CharT, "%5c"); break;
-                    case _NORW(CharT, '@'): retOutput += _NORW(CharT, "%40"); break;
-                    case _NORW(CharT, '~'): retOutput += _NORW(CharT, "%7e"); break;
-                    case _NORW(CharT, '|'): retOutput += _NORW(CharT, "%7c"); break;
-                    case _NORW(CharT, ','): retOutput += _NORW(CharT, "%2c"); break;
-                    case _NORW(CharT, '+'): retOutput += _NORW(CharT, "%2b"); break;
-                    case _NORW(CharT, ':'): retOutput += _NORW(CharT, "%3a"); break;
-                    case _NORW(CharT, '`'): retOutput += _NORW(CharT, "%60"); break;
-                    case _NORW(CharT, '['): retOutput += _NORW(CharT, "%5b"); break;
-                    case _NORW(CharT, ']'): retOutput += _NORW(CharT, "%5d"); break;
-                    case _NORW(CharT, '?'): retOutput += _NORW(CharT, "%3f"); break;
-                    case _NORW(CharT, '='): retOutput += _NORW(CharT, "%3d"); break;
-                    case _NORW(CharT, '$'): retOutput += _NORW(CharT, "%24"); break;
-                    case _NORW(CharT, '#'): retOutput += _NORW(CharT, "%23"); break;
-                    default: retOutput += ch;
-                };
-            });
-            return retOutput;
         }
     };
 

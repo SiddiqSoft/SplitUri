@@ -51,7 +51,7 @@ TEST(helpers_splituri_narrow, test_1a)
     EXPECT_EQ(8080, uri.authority.port);
     EXPECT_EQ("/results.asp?RS=CHECKED&FORM=MSNH&v=1&q=wininet", uri.urlPart);
 
-    std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
+    std::cerr << "Re-serialized: " << uri.string() << std::endl;
 
     nlohmann::json doc = uri;
     EXPECT_TRUE(doc.is_object());
