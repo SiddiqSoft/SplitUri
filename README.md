@@ -88,8 +88,8 @@ From [Wikipedia](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Synta
 > Current implementation only supports the `http` and `https` scheme.
 
 
-Uri       |
----------:|:-----------------
+Uri       |      Type        | Comment
+---------:|:-----------------|--------
 `scheme` | UriScheme | Enumeration of the Uri schemes. We currently only support http scheme.
 `authority` | Auth  | template argument defaulting to AuthorityHttp
 `path` | vector<> | Array of strings each containing the path element
