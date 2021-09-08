@@ -22,7 +22,6 @@
     <copyright>Copyright (c) 2021 Siddiq Software LLC</copyright>
     <!-- Dependencies -->
     <dependencies>
-      <dependency id="nlohmann.json" version="3.10.1"/>
     </dependencies>
   </metadata>
 

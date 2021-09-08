@@ -32,9 +32,6 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-
-
 #include "gtest/gtest.h"
 #include <iostream>
 
@@ -86,7 +83,7 @@ namespace siddiqsoft
 		std::cerr << std::format("{}", u.authority) << std::endl;
 
 		// The "rebuilt" endpoint
-		EXPECT_EQ("https://www.google.com:443/search?q=siddiqsoft&from=example_1_narrow#v1", std::format("{}", u));
+		EXPECT_EQ("https://www.google.com/search?q=siddiqsoft&from=example_1_narrow#v1", std::format("{}", u));
 		std::cerr << std::format("{}", u) << std::endl;
 	}
 
@@ -135,7 +132,7 @@ namespace siddiqsoft
 		std::wcerr << std::format(L"{}", u.authority) << std::endl;
 
 		// The "rebuilt" endpoint
-		EXPECT_EQ(L"https://www.google.com:443/search?q=siddiqsoft&from=example_1_wide#v1", std::format(L"{}", u));
+		EXPECT_EQ(L"https://www.google.com/search?q=siddiqsoft&from=example_1_wide#v1", std::format(L"{}", u));
 		std::wcerr << std::format(L"{}", u) << std::endl;
 	}
 } // namespace siddiqsoft

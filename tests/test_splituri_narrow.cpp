@@ -32,7 +32,6 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 
 #include "gtest/gtest.h"
@@ -85,7 +84,7 @@ TEST(helpers_splituri_narrow, test_1c)
 
 TEST(helpers_splituri_narrow, test_2)
 {
-    auto uri = siddiqsoft::SplitUri<char>("http://search.msn.com:8080");
+    auto uri = siddiqsoft::SplitUri("http://search.msn.com:8080");
     EXPECT_EQ("search.msn.com", uri.authority.host);
     EXPECT_EQ(8080, uri.authority.port);
     EXPECT_EQ("", uri.urlPart);
@@ -108,7 +107,7 @@ TEST(helpers_splituri_narrow, test_3a)
 
 TEST(helpers_splituri_narrow, test_3b)
 {
-    auto uri = siddiqsoft::SplitUri<char>("http://search.msn.com:65536/");
+    auto uri = siddiqsoft::SplitUri("http://search.msn.com:65536/");
     EXPECT_EQ("search.msn.com", uri.authority.host);
     EXPECT_EQ(0, uri.authority.port); // max uint16_t is 65535 so anything more will roll it over to 0
     EXPECT_EQ("/", uri.urlPart);
@@ -119,7 +118,7 @@ TEST(helpers_splituri_narrow, test_3b)
 
 TEST(helpers_splituri_narrow, test_4a)
 {
-    auto uri = siddiqsoft::SplitUri<char>("http://m.co");
+    auto uri = siddiqsoft::SplitUri("http://m.co");
     EXPECT_EQ("m.co", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ("", uri.urlPart);
@@ -131,7 +130,7 @@ TEST(helpers_splituri_narrow, test_4a)
 
 TEST(helpers_splituri_narrow, test_4b)
 {
-    auto uri = siddiqsoft::SplitUri<char>("https://m.co");
+    auto uri = siddiqsoft::SplitUri("https://m.co");
     EXPECT_EQ("m.co", uri.authority.host);
     EXPECT_EQ(443, uri.authority.port);
     EXPECT_EQ("", uri.urlPart);
@@ -143,7 +142,7 @@ TEST(helpers_splituri_narrow, test_4b)
 
 TEST(helpers_splituri_narrow, test_4c)
 {
-    auto uri = siddiqsoft::SplitUri<char>("http://localhost");
+    auto uri = siddiqsoft::SplitUri("http://localhost");
     EXPECT_EQ("localhost", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ("", uri.urlPart);
@@ -155,7 +154,7 @@ TEST(helpers_splituri_narrow, test_4c)
 
 TEST(helpers_splituri_narrow, test_5a)
 {
-    auto uri = siddiqsoft::SplitUri<char>("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
+    auto uri = siddiqsoft::SplitUri("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
                                           "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
     EXPECT_EQ("<ServerName>", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
@@ -172,7 +171,7 @@ TEST(helpers_splituri_narrow, test_5a)
 
 TEST(helpers_splituri_narrow, test_5b)
 {
-    auto uri = siddiqsoft::SplitUri<char>("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
+    auto uri = siddiqsoft::SplitUri("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
                                           "model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5");
     EXPECT_EQ("<ServerName>", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
@@ -189,7 +188,7 @@ TEST(helpers_splituri_narrow, test_5b)
 
 TEST(helpers_splituri_narrow, test_6a)
 {
-    auto uri = siddiqsoft::SplitUri<char>("https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top");
+    auto uri = siddiqsoft::SplitUri("https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top");
     EXPECT_EQ("www.example.com", uri.authority.host);
     EXPECT_EQ("john.doe", uri.authority.userInfo);
     EXPECT_EQ(123, uri.authority.port);
@@ -436,7 +435,7 @@ TEST(helpers_splituri_narrow, test_10)
     std::cerr << std::format("{}", u.authority) << std::endl;
 
     // The "rebuilt" endpoint
-    EXPECT_EQ("https://www.google.com:443/search/?emptyFlag&Char{55}&q=siddiqsoft#v1", std::format("{}", u));
+    EXPECT_EQ("https://www.google.com/search/?emptyFlag&Char{55}&q=siddiqsoft#v1", std::format("{}", u));
     std::cerr << std::format("{}", u) << std::endl;
 }
 

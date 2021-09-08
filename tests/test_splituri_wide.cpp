@@ -32,7 +32,6 @@
     OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 
 #include "gtest/gtest.h"
 #include <iostream>
@@ -46,7 +45,7 @@ TEST(helpers_splituri_wide, test_1a)
 {
     using namespace std;
 
-    auto uri = siddiqsoft::SplitUri<>(L"http://search.msn.com:8080/results.asp?RS=CHECKED&FORM=MSNH&v=1&q=wininet"s);
+    auto uri = siddiqsoft::SplitUri(L"http://search.msn.com:8080/results.asp?RS=CHECKED&FORM=MSNH&v=1&q=wininet"s);
     EXPECT_EQ(L"search.msn.com", uri.authority.host);
     EXPECT_EQ(8080, uri.authority.port);
     EXPECT_EQ(L"/results.asp?RS=CHECKED&FORM=MSNH&v=1&q=wininet", uri.urlPart);
@@ -88,7 +87,7 @@ TEST(helpers_splituri_wide, test_1c)
 
 TEST(helpers_splituri_wide, test_2)
 {
-    auto uri = siddiqsoft::SplitUri<wchar_t>(L"http://search.msn.com:8080");
+    auto uri = siddiqsoft::SplitUri(L"http://search.msn.com:8080");
     EXPECT_EQ(L"search.msn.com", uri.authority.host);
     EXPECT_EQ(8080, uri.authority.port);
     EXPECT_EQ(L"", uri.urlPart);
@@ -111,7 +110,7 @@ TEST(helpers_splituri_wide, test_3a)
 
 TEST(helpers_splituri_wide, test_3b)
 {
-    auto uri = siddiqsoft::SplitUri<wchar_t>(L"http://search.msn.com:65536/");
+    auto uri = siddiqsoft::SplitUri(L"http://search.msn.com:65536/");
     EXPECT_EQ(L"search.msn.com", uri.authority.host);
     EXPECT_EQ(0, uri.authority.port); // max uint16_t is 65535 so anything more will roll it over to 0
     EXPECT_EQ(L"/", uri.urlPart);
@@ -122,7 +121,7 @@ TEST(helpers_splituri_wide, test_3b)
 
 TEST(helpers_splituri_wide, test_4a)
 {
-    auto uri = siddiqsoft::SplitUri<wchar_t>(L"http://m.co");
+    auto uri = siddiqsoft::SplitUri(L"http://m.co");
     EXPECT_EQ(L"m.co", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ(L"", uri.urlPart);
@@ -134,7 +133,7 @@ TEST(helpers_splituri_wide, test_4a)
 
 TEST(helpers_splituri_wide, test_4b)
 {
-    auto uri = siddiqsoft::SplitUri<wchar_t>(L"https://m.co");
+    auto uri = siddiqsoft::SplitUri(L"https://m.co");
     EXPECT_EQ(L"m.co", uri.authority.host);
     EXPECT_EQ(443, uri.authority.port);
     EXPECT_EQ(L"", uri.urlPart);
@@ -146,7 +145,7 @@ TEST(helpers_splituri_wide, test_4b)
 
 TEST(helpers_splituri_wide, test_4c)
 {
-    auto uri = siddiqsoft::SplitUri<wchar_t>(L"http://localhost");
+    auto uri = siddiqsoft::SplitUri(L"http://localhost");
     EXPECT_EQ(L"localhost", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ(L"", uri.urlPart);
@@ -158,8 +157,8 @@ TEST(helpers_splituri_wide, test_4c)
 
 TEST(helpers_splituri_wide, test_5a)
 {
-    auto uri = siddiqsoft::SplitUri<wchar_t>(L"http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
-                                             "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
+    auto uri = siddiqsoft::SplitUri(L"http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
+                                               "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
     EXPECT_EQ(L"<ServerName>", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ(L"/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5",
@@ -176,8 +175,8 @@ TEST(helpers_splituri_wide, test_5a)
 
 TEST(helpers_splituri_wide, test_5b)
 {
-    auto uri = siddiqsoft::SplitUri<wchar_t>(L"http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
-                                             "model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5");
+    auto uri = siddiqsoft::SplitUri(L"http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
+                                               "model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5");
     EXPECT_EQ(L"<ServerName>", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ(L"/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5",
@@ -193,8 +192,8 @@ TEST(helpers_splituri_wide, test_5b)
 
 TEST(helpers_splituri_wide, test_6a)
 {
-    auto uri =
-            siddiqsoft::SplitUri<wchar_t>(L"https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top");
+    auto uri = siddiqsoft::SplitUri(
+            L"https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top");
     EXPECT_EQ(L"www.example.com", uri.authority.host);
     EXPECT_EQ(L"john.doe", uri.authority.userInfo);
     EXPECT_EQ(123, uri.authority.port);
@@ -211,7 +210,8 @@ TEST(helpers_splituri_wide, test_6b)
 {
     using namespace std;
 
-    auto uri = siddiqsoft::SplitUri(L"https://john.doe@www.example.com:123/forum/questions?tag=networking&order=newest#top"s);
+    auto uri = siddiqsoft::SplitUri(
+            L"https://john.doe@www.example.com:123/forum/questions?tag=networking&order=newest#top"s);
     EXPECT_EQ(L"www.example.com", uri.authority.host);
     EXPECT_EQ(L"john.doe", uri.authority.userInfo);
     EXPECT_EQ(123, uri.authority.port);
@@ -233,7 +233,8 @@ TEST(helpers_splituri_wide, test_6c)
 {
     using namespace std;
 
-    auto uri = siddiqsoft::SplitUri(L"https://john.doe@www.example.com/forum/questions?tag=networking&order=newest#top"s);
+    auto uri =
+            siddiqsoft::SplitUri(L"https://john.doe@www.example.com/forum/questions?tag=networking&order=newest#top"s);
     EXPECT_EQ(L"www.example.com", uri.authority.host);
     EXPECT_EQ(L"john.doe", uri.authority.userInfo);
     EXPECT_EQ(443, uri.authority.port);
@@ -440,7 +441,7 @@ TEST(helpers_splituri_wide, test_10)
     std::wcerr << std::format(L"{}", u.authority) << std::endl;
 
     // The "rebuilt" endpoint
-    EXPECT_EQ(L"https://www.google.com:443/search/?emptyFlag&Char{55}&q=siddiqsoft#v1", std::format(L"{}", u));
+    EXPECT_EQ(L"https://www.google.com/search/?emptyFlag&Char{55}&q=siddiqsoft#v1", std::format(L"{}", u));
     std::wcerr << std::format(L"{}", u) << std::endl;
 }
 
