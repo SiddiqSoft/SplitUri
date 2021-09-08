@@ -168,10 +168,12 @@ Variable | Description
 ### Signature
 
 ```cpp
-enum class UriScheme
-{
-    WebHttp,  WebHttps,  Ldap,  Mailto,  News,  Tel,  Telnet,  Urn,  Unknown
-};
+    enum class UriScheme
+    {
+        WebHttp,  WebHttps,
+        Ldap,  Mailto,  News,  Tel,  Telnet,  Urn, // Not supported
+        Unknown
+    };
 ```
 
 <hr/>
@@ -238,7 +240,7 @@ std::cerr << std::format("{}", u) << std::endl;
 
 And the corresponding output
 
-```json
+```
 www.google.com
 443
 /search?flag&q=siddiqsoft#v1
