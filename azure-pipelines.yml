@@ -8,6 +8,7 @@ trigger:
   paths:
     exclude:
     - docs/*
+    - docs/index.md
     - README.md
 
 pool:

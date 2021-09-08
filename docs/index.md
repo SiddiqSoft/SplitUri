@@ -46,30 +46,30 @@ In this library, we focus on the `http` and `https` scheme.
 ### Signature
 
 ```cpp
-template <typename CharT = char, class Auth = AuthorityHttp<CharT>>
-    requires (same_as<char, CharT> || same_as<wchar_t, CharT>) &&
-              same_as<Auth, AuthorityHttp<CharT>>
-class Uri
-{
-private:
-    basic_string<CharT>                           sourceUri {};
+    template <typename T = char, class Auth = AuthorityHttp<T>>
+        requires (same_as<char, T> || same_as<wchar_t, T>) &&
+                  same_as<Auth, AuthorityHttp<T>>
+    class Uri
+    {
+    private:
+        basic_string<T>                       sourceUri {};
 
-public:
-    UriScheme                                     scheme {UriScheme::WebHttp};
-    Auth                                          authority {};
-    vector<std::basic_string<CharT>>              path {};
-    map<basic_string<CharT>, basic_string<CharT>> query {};
-    basic_string<CharT>                           fragment {};
-    basic_string<CharT>                           urlPart {};
-    basic_string<CharT>                           queryPart {};
+    public:
+        UriScheme                             scheme {UriScheme::WebHttp};
+        Auth                                  authority {};
+        vector<std::basic_string<T>>          path {};
+        map<basic_string<T>, basic_string<T>> query {};
+        basic_string<T>                       fragment {};
+        basic_string<T>                       urlPart {};
+        basic_string<T>                       queryPart {};
 
-    Uri();
-    Uri(const basic_string<CharT>& aEndpoint);
+        Uri();
+        Uri(const basic_string<T>& aEndpoint);
 
-                              operator basic_string<CharT>() const;
-    const basic_string<CharT> string() const;
-    void                      split(const basic_string<CharT>& aEndpoint);
-}
+                              operator basic_string<T>() const;
+        const basic_string<T> string() const;
+        void                  split(const basic_string<T>& aEndpoint);
+    }
 ```
 
 We use `<concepts>` `requires` to ensure that we only get `std::string` or `std::wstring`. When possible we can update this library to support `char8_t`.
@@ -88,11 +88,17 @@ Variable | Description
 
 ### Member Functions
 
-#### Uri::Uri
+#### `Uri::Uri`
 ```cpp
     Uri();
 ```
 Default (empty) constructor.
+
+#### `Uri::Uri`
+```cpp
+    Uri(const std::basic_string<CharT>&) noexcept;
+```
+Delegates to the [`split`](#split) function.
 
 #### `Uri::split`
 ```cpp
@@ -103,12 +109,6 @@ This method performs the parsing, splitting and general decomposition of the sou
 
 ##### returns
 A Uri<> object
-
-#### `Uri::Uri`
-```cpp
-    Uri(const std::basic_string<CharT>&) noexcept;
-```
-Delegates to the [`split`](#split) function.
 
 #### `Uri::operator basic_string()`
 ```cpp
