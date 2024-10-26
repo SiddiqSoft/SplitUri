@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.25)
 
 # The project version is updated below with the tag from git
 #   We need to support "C" language in order for the googletest to build.
-project(sip2json
+project(splituri
         VERSION 0.0.0
         LANGUAGES CXX C
         HOMEPAGE_URL "%%myurl%%"
-        DESCRIPTION "sip2json SIP parser and encode header-only library"
+        DESCRIPTION "splituri SIP parser and encode header-only library"
 )
 
 if(WIN32)
@@ -35,7 +35,6 @@ FetchContent_Declare(
     GIT_NO_TAGS TRUE
 )
 FetchContent_MakeAvailable(nlohmann_json)
-
 
 # Get the branch name and the version tag (requires that we have a semver tag at some point!)
 execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --is-inside-work-tree OUTPUT_VARIABLE IS_HERE_GIT OUTPUT_STRIP_TRAILING_WHITESPACE)

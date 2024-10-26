@@ -1,4 +1,4 @@
-name: 'sip2json build'
+name: 'splituri build'
 
 trigger:
   batch: true
@@ -20,10 +20,10 @@ strategy:
       osName: Windows_NT
       poolName: Default
       poolImageName:
-#    Linux:
-#      osName: Linux
-#      poolName: Default
-#      poolImageName:
+    Linux:
+      osName: Linux
+      poolName: Default
+      poolImageName:
 
 variables:
   buildConfiguration: 'Release'
@@ -58,10 +58,10 @@ steps:
     configFilePath: 'GitVersion.yml'
 
 - script: echo %Action%%BuildVersion%
-  displayName: 'Set build version to $(GitVersion.FullSemVer)'
+  displayName: 'Set build version to $(GitVersion.MajorMinorPatch)'
   env:
     Action: '##vso[build.updatebuildnumber]'
-    BuildVersion: $(GitVersion.FullSemVer)
+    BuildVersion: $(GitVersion.MajorMinorPatch)
 
 - task: CMake@1
   displayName: 'CMake ..'
@@ -107,20 +107,20 @@ steps:
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;build/*.nupkg'
     nuGetFeedType: 'external'
     publishFeedCredentials: 'sqs-nuget'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Agent.OS'], 'Windows'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Agent.OS'], 'Windows'))
 
 - task: GitHubRelease@1
   inputs:
     gitHubConnection: 'github-packages-sqs'
-    repositoryName: 'siddiqsoftware/sip2json'
+    repositoryName: 'siddiqsoft/splituri'
     action: 'create'
     target: '$(Build.SourceVersion)'
     tagSource: 'userSpecifiedTag'
     tag: '$(build.buildNumber)'
     title: 'v$(build.buildNumber)'
     releaseNotesSource: 'inline'
-    releaseNotesInline: 'Documentation https://siddiqsoftware.github.io/sip2json'
+    releaseNotesInline: 'Documentation https://siddiqsoft.github.io/splituri'
     isPreRelease: true
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), startsWith(variables['Agent.OS'], 'Windows'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Agent.OS'], 'Windows'))
