@@ -43,7 +43,8 @@
 #include <format>
 #include <concepts>
 #include <ranges>
-
+#include <map>
+#include <vector>
 
 namespace siddiqsoft
 {
