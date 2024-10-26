@@ -520,7 +520,7 @@ namespace siddiqsoft
     }
 #endif
 
-    namespace literals
+    namespace splituri_literals
     {
         /// @brief Literal operator `_Uri` for std::string
         /// @param src Given a sequence of characters
@@ -547,7 +547,7 @@ template <typename CharT>
 struct std::formatter<siddiqsoft::AuthorityHttp<CharT>, CharT> : std::formatter<std::basic_string<CharT>, CharT>
 {
     template <class FC>
-    auto format(const siddiqsoft::AuthorityHttp<CharT>& sv, FC& ctx)
+    auto format(const siddiqsoft::AuthorityHttp<CharT>& sv, FC& ctx) const
     {
         return std::formatter<std::basic_string<CharT>, CharT>::format(std::basic_string<CharT>(sv), ctx);
     }
@@ -558,7 +558,7 @@ template <typename CharT>
 struct std::formatter<siddiqsoft::AuthorityLdap<CharT>> : std::formatter<std::basic_string<CharT>, CharT>
 {
     template <class FC>
-    auto format(const siddiqsoft::AuthorityLdap<CharT>& sv, FC& ctx)
+    auto format(const siddiqsoft::AuthorityLdap<CharT>& sv, FC& ctx) const
     {
         return std::formatter<std::basic_string<CharT>, CharT>::format(std::basic_string<CharT>(sv), ctx);
     }
@@ -569,7 +569,7 @@ template <typename CharT>
 struct std::formatter<siddiqsoft::AuthorityNone<CharT>> : std::formatter<std::basic_string<CharT>, CharT>
 {
     template <class FC>
-    auto format(const siddiqsoft::AuthorityNone<CharT>& sv, FC& ctx)
+    auto format(const siddiqsoft::AuthorityNone<CharT>& sv, FC& ctx) const
     {
         return std::formatter<std::basic_string<CharT>, CharT>::format(std::basic_string<CharT>(sv), ctx);
     }
@@ -581,7 +581,7 @@ template <typename CharT>
 struct std::formatter<siddiqsoft::UriScheme, CharT> : std::formatter<std::basic_string<CharT>, CharT>
 {
     template <class FC>
-    auto format(const siddiqsoft::UriScheme& s, FC& fc)
+    auto format(const siddiqsoft::UriScheme& s, FC& fc) const
     {
         return std::formatter<std::basic_string<CharT>, CharT>::format(siddiqsoft::to_string<CharT>(s), fc);
     }
@@ -592,7 +592,7 @@ struct std::formatter<siddiqsoft::Uri<CharT, siddiqsoft::AuthorityHttp<CharT>>, 
     : std::formatter<std::basic_string<CharT>, CharT>
 {
     template <typename FC>
-    auto format(const siddiqsoft::Uri<CharT, siddiqsoft::AuthorityHttp<CharT>>& u, FC& ctx)
+    auto format(const siddiqsoft::Uri<CharT, siddiqsoft::AuthorityHttp<CharT>>& u, FC& ctx) const
     {
         return std::formatter<std::basic_string<CharT>, CharT>::format(u, ctx);
     }
