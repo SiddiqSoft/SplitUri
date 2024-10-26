@@ -42,7 +42,7 @@
 
 TEST(helpers_splituri_wide_nojson, test_10)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto u = L"https://www.google.com/search/?emptyFlag&Char{55}&q=siddiqsoft#v1"_Uri;
 

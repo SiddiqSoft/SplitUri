@@ -43,7 +43,7 @@ namespace siddiqsoft
 {
 	TEST(examples, example_1_narrow)
 	{
-		using namespace siddiqsoft::literals;
+		using namespace siddiqsoft::splituri_literals;
 
 		auto u = "https://www.google.com/search?q=siddiqsoft&from=example_1_narrow#v1"_Uri;
 
@@ -90,7 +90,7 @@ namespace siddiqsoft
 
 	TEST(examples, example_1_wide)
 	{
-		using namespace siddiqsoft::literals;
+		using namespace siddiqsoft::splituri_literals;
 
 		auto u = L"https://www.google.com/search?q=siddiqsoft&from=example_1_wide#v1"_Uri;
 

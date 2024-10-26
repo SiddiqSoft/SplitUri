@@ -33,7 +33,6 @@
  */
 
 
-
 #include "gtest/gtest.h"
 #include <iostream>
 
@@ -43,7 +42,7 @@
 
 TEST(helpers_splituri_narrow, test_1a)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = "http://search.msn.com:8080/results.asp?RS=CHECKED&FORM=MSNH&v=1&q=wininet"_Uri;
     EXPECT_EQ("search.msn.com", uri.authority.host);
@@ -60,7 +59,7 @@ TEST(helpers_splituri_narrow, test_1a)
 
 TEST(helpers_splituri_narrow, test_1b)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = "https://YOURDBNAME.documents.azure.com:443/"_Uri;
     EXPECT_EQ("YOURDBNAME.documents.azure.com", uri.authority.host);
@@ -72,7 +71,7 @@ TEST(helpers_splituri_narrow, test_1b)
 
 TEST(helpers_splituri_narrow, test_1c)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = "https://YOURDBNAME.documents.azure.com:1443/"_Uri;
     EXPECT_EQ("YOURDBNAME.documents.azure.com", uri.authority.host);
@@ -94,7 +93,7 @@ TEST(helpers_splituri_narrow, test_2)
 
 TEST(helpers_splituri_narrow, test_3a)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = "http://search.msn.com"_Uri;
     EXPECT_EQ("search.msn.com", uri.authority.host);
@@ -155,7 +154,7 @@ TEST(helpers_splituri_narrow, test_4c)
 TEST(helpers_splituri_narrow, test_5a)
 {
     auto uri = siddiqsoft::SplitUri("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
-                                          "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
+                                    "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
     EXPECT_EQ("<ServerName>", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ("/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5",
@@ -172,7 +171,7 @@ TEST(helpers_splituri_narrow, test_5a)
 TEST(helpers_splituri_narrow, test_5b)
 {
     auto uri = siddiqsoft::SplitUri("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
-                                          "model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5");
+                                    "model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5");
     EXPECT_EQ("<ServerName>", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ("/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5",
@@ -346,7 +345,7 @@ TEST(helpers_splituri_narrow, test8b)
 
 TEST(helpers_splituri_narrow, test_9a)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = "http://n.co:6553/"_Uri;
     EXPECT_EQ("n.co", uri.authority.host);
@@ -358,7 +357,7 @@ TEST(helpers_splituri_narrow, test_9a)
 
 TEST(helpers_splituri_narrow, test_9b)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = "http://n.co:6553"_Uri;
     EXPECT_EQ("n.co", uri.authority.host);
@@ -370,7 +369,7 @@ TEST(helpers_splituri_narrow, test_9b)
 
 TEST(helpers_splituri_narrow, test_9c)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = "http://n.co:65536/"_Uri;
     EXPECT_EQ("n.co", uri.authority.host);
@@ -382,7 +381,7 @@ TEST(helpers_splituri_narrow, test_9c)
 
 TEST(helpers_splituri_narrow, test_9d)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = "http://n.co:65535"_Uri;
     EXPECT_EQ("n.co", uri.authority.host);
@@ -395,7 +394,7 @@ TEST(helpers_splituri_narrow, test_9d)
 
 TEST(helpers_splituri_narrow, test_10)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto u = "https://www.google.com/search/?emptyFlag&Char{55}&q=siddiqsoft#v1"_Uri;
 

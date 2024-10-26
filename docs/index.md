@@ -212,7 +212,7 @@ It is meant to be used internally to handle conversion of small data sets.
 #include "siddiqsoft/SplitUri.hpp"
 ..
 ..
-using namespace siddiqsoft::literals;
+using namespace siddiqsoft::splituri_literals;
 // Use the literal operator helper.
 auto uri= "https://www.google.com/search?q=siddiqsoft"_Uri;
 // Outputs https://www.google.com/search?q=siddiqsoft
@@ -222,7 +222,7 @@ std::cout << std::format("{}", uri) << std::endl;
 A more through example
 
 ```cpp
-using namespace siddiqsoft::literals;
+using namespace siddiqsoft::splituri_literals;
 
 auto u = "https://www.google.com/search?flag&q=siddiqsoft#v1"_Uri;
 

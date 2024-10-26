@@ -61,7 +61,7 @@ TEST(helpers_splituri_wide, test_1a)
 
 TEST(helpers_splituri_wide, test_1b)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = L"https://YOURDBNAME.documents.azure.com:443/"_Uri;
     EXPECT_EQ(L"YOURDBNAME.documents.azure.com", uri.authority.host);
@@ -74,7 +74,7 @@ TEST(helpers_splituri_wide, test_1b)
 
 TEST(helpers_splituri_wide, test_1c)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = L"https://YOURDBNAME.documents.azure.com:1443/"_Uri;
     EXPECT_EQ(L"YOURDBNAME.documents.azure.com", uri.authority.host);
@@ -97,7 +97,7 @@ TEST(helpers_splituri_wide, test_2)
 
 TEST(helpers_splituri_wide, test_3a)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = L"http://search.msn.com"_Uri;
     EXPECT_EQ(L"search.msn.com", uri.authority.host);
@@ -352,7 +352,7 @@ TEST(helpers_splituri_wide, test8b)
 
 TEST(helpers_splituri_wide, test_9a)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = L"http://n.co:6553/"_Uri;
     EXPECT_EQ(L"n.co", uri.authority.host);
@@ -364,7 +364,7 @@ TEST(helpers_splituri_wide, test_9a)
 
 TEST(helpers_splituri_wide, test_9b)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = L"http://n.co:6553"_Uri;
     EXPECT_EQ(L"n.co", uri.authority.host);
@@ -376,7 +376,7 @@ TEST(helpers_splituri_wide, test_9b)
 
 TEST(helpers_splituri_wide, test_9c)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = L"http://n.co:65536/"_Uri;
     EXPECT_EQ(L"n.co", uri.authority.host);
@@ -388,7 +388,7 @@ TEST(helpers_splituri_wide, test_9c)
 
 TEST(helpers_splituri_wide, test_9d)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto uri = L"http://n.co:65535"_Uri;
     EXPECT_EQ(L"n.co", uri.authority.host);
@@ -400,7 +400,7 @@ TEST(helpers_splituri_wide, test_9d)
 
 TEST(helpers_splituri_wide, test_10)
 {
-    using namespace siddiqsoft::literals;
+    using namespace siddiqsoft::splituri_literals;
 
     auto u = L"https://www.google.com/search/?emptyFlag&Char{55}&q=siddiqsoft#v1"_Uri;
 
