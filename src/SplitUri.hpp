@@ -46,6 +46,11 @@
 #include <map>
 #include <vector>
 
+#if defined(UNIX) || !defined(_WIN32)
+#include <codecvt>
+#include <locale>
+#endif
+
 namespace siddiqsoft
 {
 #if !defined(_NORW)
@@ -76,9 +81,14 @@ namespace siddiqsoft
     [[nodiscard]] static inline std::string w2n(const std::wstring& ws)
     {
         if (!ws.empty()) {
+#ifdef _WIN32
             size_t convertedCount {};
             char   ns[256] {};
             return 0 == wcstombs_s(&convertedCount, ns, 255, ws.c_str(), 255) ? ns : std::string {};
+#else
+            std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+            return converter.to_bytes(ws);
+#endif
         }
         return {};
     }
@@ -166,10 +176,7 @@ namespace siddiqsoft
     {
         std::basic_string<CharT> host {};
 
-        operator std::basic_string<CharT>() const
-        {
-            return std::format(_NORW(CharT, "[{}]"), host);
-        }
+        operator std::basic_string<CharT>() const { return std::format(_NORW(CharT, "[{}]"), host); }
     };
 
 
@@ -181,10 +188,7 @@ namespace siddiqsoft
     {
         std::basic_string<CharT> none {};
 
-        operator std::basic_string<CharT>() const
-        {
-            return none;
-        }
+        operator std::basic_string<CharT>() const { return none; }
 
 #ifdef NLOHMANN_JSON_VERSION_MAJOR
         NLOHMANN_DEFINE_TYPE_INTRUSIVE(AuthorityNone<CharT>, none);
@@ -240,8 +244,8 @@ namespace siddiqsoft
     /// @tparam T Maybe std::string or std::wstring
     /// @tparam Auth Current implementation only supports AuthorityHttp<T>
     template <typename CharT = char, class Auth = AuthorityHttp<CharT>>
-        requires(std::same_as<char, CharT> || std::same_as<wchar_t, CharT>)
-    &&std::same_as<Auth, AuthorityHttp<CharT>> struct Uri
+        requires(std::same_as<char, CharT> || std::same_as<wchar_t, CharT>) && std::same_as<Auth, AuthorityHttp<CharT>>
+    struct Uri
     {
     private:
         std::basic_string<CharT> sourceUri {};
@@ -257,7 +261,7 @@ namespace siddiqsoft
 
 
         /// @brief Default constructor
-        Uri() {};
+        Uri() { };
 
         /// @brief Given an endpoint Uri, decompose it into the Uri
         /// @tparam T Specify std::string or std::wstring (defaults to std::string)
@@ -416,10 +420,7 @@ namespace siddiqsoft
 
 
         /// @brief Operator rebuilds the Uri string
-        operator std::basic_string<CharT>() const
-        {
-            return string();
-        }
+        operator std::basic_string<CharT>() const { return string(); }
 
         /// @brief Rebuild the Uri string
         /// @return Uri string of desired type (std::string or std::wstring)
@@ -536,11 +537,11 @@ namespace siddiqsoft
         /// @param src Given a sequence of characters
         /// @param sz Length of given character sequence
         /// @return Uri<wstring,AuthorityHttp> object
-        static siddiqsoft::Uri<wchar_t, siddiqsoft::AuthorityHttp<wchar_t>> operator"" _Uri(const wchar_t* src, size_t sz)
+        static siddiqsoft::Uri<wchar_t, siddiqsoft::AuthorityHttp<wchar_t>> operator"" _Uri(const wchar_t * src, size_t sz)
         {
             return siddiqsoft::Uri<wchar_t, siddiqsoft::AuthorityHttp<wchar_t>>(std::wstring(src, sz));
         }
-    } // namespace literals
+    } // namespace splituri_literals
 } // namespace siddiqsoft
 
 

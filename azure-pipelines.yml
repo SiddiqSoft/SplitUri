@@ -1,78 +1,95 @@
+name: 'splituri build'
+
 trigger:
   batch: true
   branches:
     include:
+    - master
     - main
-    - develop
+    - bufix/*
     - release/*
+    - hotfix/*
+    - feature/*
   paths:
     exclude:
-    - docs/*
-    - docs/index.md
     - README.md
 
-pool:
-  name: Default
-  demands:
-  - msbuild
-  - visualstudio
-  - vstest
+strategy:
+  matrix:
+    Windows:
+      osName: Windows_NT
+      poolName: Default
+      poolImageName:
+    Linux:
+      osName: Linux
+      poolName: Default
+      poolImageName:
 
 variables:
-  buildPlatform: 'x64'
-  
+  buildConfiguration: 'Release'
+  buildLatestTag: '0.0.0'
+
+pool:
+  name: $(poolName)
+  vmImage: $(poolImageName)
+  demands:
+    - Agent.OS -equals $(osName)
+
 steps:
+- checkout: self
+  fetchDepth: 0
+
 - task: NuGetToolInstaller@1
-  displayName: 'Use NuGet 5.10.0'
+  displayName: 'Install Nuget'
   inputs:
-    versionSpec: '5.10.0'
+    versionSpec: '>=5.0.0-0'
     checkLatest: true
 
-- task: GitVersion@5
+- task: gitversion/setup@3
+  displayName: 'Install GitVersion..'
   inputs:
-    runtime: 'core'
+    versionSpec: '6.x'
+    preferLatestVersion: true
+
+- task: gitversion/execute@3
+  displayName: 'Determine Version..'
+  inputs:
+    useConfigFile: true
     configFilePath: 'GitVersion.yml'
 
 - script: echo %Action%%BuildVersion%
-  displayName: 'Set build version'
+  displayName: 'Set build version to $(GitVersion.MajorMinorPatch)'
   env:
     Action: '##vso[build.updatebuildnumber]'
-    BuildVersion: $(GitVersion.NugetVersionV2)
+    BuildVersion: $(GitVersion.MajorMinorPatch)
 
-- task: NuGetCommand@2
-  displayName: 'NuGet restore'
+- task: CMake@1
+  displayName: 'CMake ..'
   inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
-    vstsFeed: 'ec2759e0-0587-4306-8a8d-8695f15e2336'
+    cmakeArgs: '..'
+
+- task: CMake@1
+  displayName: 'CMake --build . --config $(buildConfiguration)'
+  inputs:
+    cmakeArgs: '--build . --config $(buildConfiguration)'
+  condition: succeeded()
+
+- task: CMake@1
+  displayName: 'CMake -E chdir $(System.DefaultWorkingDirectory)/build/tests ctest'
+  inputs:
+    cmakeArgs: '-E chdir $(System.DefaultWorkingDirectory)/build/tests ctest . --output-junit $(System.DefaultWorkingDirectory)/build/tests/test_detail.xml --output-on-failure'
+  condition: succeeded()
   continueOnError: true
-
-- task: VSBuild@1
-  displayName: 'Build solution RELEASE'
-  inputs:
-    solution: 'SplitUri.sln'
-    platform: 'x64'
-    configuration: 'Release'
-    maximumCpuCount: true
-    msbuildArchitecture: 'x64'
-
-- task: CmdLine@2
-  inputs:
-    script: |
-      echo Running googletest
-      cd output\Release
-      basic_tests.exe --gtest_output=xml:..\..\TestResults\
 
 - task: PublishTestResults@2
-  displayName: 'Publish Release Test Results **/TEST-*.xml'
+  displayName: 'Publish $(buildConfiguration) Test Results test_detail.xml'
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: '**/TestResults/basic_tests.xml'
+    testResultsFiles: '$(System.DefaultWorkingDirectory)/build/tests/test_detail.xml'
     mergeTestResults: true
-    buildPlatform: 'x64'
-    buildConfiguration: 'Release'
-  continueOnError: true
+    buildConfiguration: '$(buildConfiguration)'
+  continueOnError: false
+  condition: succeeded()
 
 - task: NuGetCommand@2
   displayName: 'NuGet pack'
@@ -80,27 +97,30 @@ steps:
     command: 'pack'
     packagesToPack: 'nuget/*.nuspec'
     versioningScheme: 'off'
-    buildProperties: 'VERSION=$(build.buildNumber)'
+    buildProperties: 'VERSION=$(GitVersion.MajorMinorPatch)'
+  condition: and(succeeded(), startsWith(variables['Agent.OS'], 'Windows'))
 
 - task: NuGetCommand@2
   displayName: 'NuGet push'
   inputs:
     command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg;build/*.nupkg;!build/*symbols.nupkg'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;build/*.nupkg'
     nuGetFeedType: 'external'
     publishFeedCredentials: 'sqs-nuget'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Agent.OS'], 'Windows'))
 
 - task: GitHubRelease@1
   inputs:
     gitHubConnection: 'github-packages-sqs'
-    repositoryName: 'SiddiqSoft/SplitUri'
+    repositoryName: 'siddiqsoft/splituri'
     action: 'create'
     target: '$(Build.SourceVersion)'
     tagSource: 'userSpecifiedTag'
     tag: '$(build.buildNumber)'
     title: 'v$(build.buildNumber)'
     releaseNotesSource: 'inline'
+    releaseNotesInline: 'Documentation https://siddiqsoft.github.io/splituri'
     isPreRelease: true
     changeLogCompareToRelease: 'lastFullRelease'
     changeLogType: 'commitBased'
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), startsWith(variables['Agent.OS'], 'Windows'))
