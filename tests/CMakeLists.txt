@@ -7,10 +7,10 @@ if(${${PROJECT_NAME}_BUILD_TESTS})
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -fprofile-arcs -ftest-coverage -fprofile-instr-generate -fcoverage-mapping")
     set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fprofile-instr-generate")
 
-    target_compile_features(${TESTPROJ} PRIVATE cxx_std_17)
+    target_compile_features(${TESTPROJ} PRIVATE cxx_std_20)
     target_compile_options( ${TESTPROJ}
                             PRIVATE
-                            $<$<CXX_COMPILER_ID:MSVC>:/std:c++17> )
+                            $<$<CXX_COMPILER_ID:MSVC>:/std:c++20> )
     target_sources( ${TESTPROJ}
                     PRIVATE
                     ${PROJECT_SOURCE_DIR}/tests/examples.cpp

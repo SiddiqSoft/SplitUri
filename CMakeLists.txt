@@ -20,7 +20,7 @@ project(SplitUri
         VERSION         "${CURRENT_PROJECT_VERSION}"
         LANGUAGES       CXX
         HOMEPAGE_URL    "%%myurl%%"
-        DESCRIPTION     "Header only C++17 library to parse a string containing delimited key-value pairs into a map container including the feature to convert from std::string to std::wstring and vice-versa.")
+        DESCRIPTION     "Split URIf for modern C++")
 
 
 # ____________________________________
@@ -37,7 +37,7 @@ target_include_directories(${PROJECT_NAME}
                             INTERFACE
                             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
                             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_20)
 
 
 # ____________________________________
