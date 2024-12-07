@@ -38,7 +38,7 @@
 
 
 #include "nlohmann/json.hpp"
-#include "../src/SplitUri.hpp"
+#include "../include/siddiqsoft/SplitUri.hpp"
 
 
 TEST(helpers_splituri_wide, test_1a)
