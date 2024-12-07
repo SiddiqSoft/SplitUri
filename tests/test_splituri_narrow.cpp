@@ -37,7 +37,7 @@
 #include <iostream>
 
 #include "nlohmann/json.hpp"
-#include "../src/SplitUri.hpp"
+#include "../include/siddiqsoft/SplitUri.hpp"
 
 
 TEST(helpers_splituri_narrow, test_1a)

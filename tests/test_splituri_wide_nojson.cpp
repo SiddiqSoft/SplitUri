@@ -37,7 +37,7 @@
 #include <iostream>
 
 
-#include "../src/SplitUri.hpp"
+#include "../include/siddiqsoft/SplitUri.hpp"
 
 
 TEST(helpers_splituri_wide_nojson, test_10)

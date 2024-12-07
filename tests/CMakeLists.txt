@@ -1,35 +1,34 @@
-cmake_minimum_required(VERSION 3.25)
+if(${${PROJECT_NAME}_BUILD_TESTS})
+    set(TESTPROJ ${PROJECT_NAME}_tests)
 
-# Require C++20
-message(STATUS "Require C++20..for tests..")
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+    add_executable(${TESTPROJ})
 
-find_package(Git REQUIRED)
-include(FetchContent)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O0 -fprofile-arcs -ftest-coverage -fprofile-instr-generate -fcoverage-mapping")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O0 -fprofile-arcs -ftest-coverage -fprofile-instr-generate -fcoverage-mapping")
+    set(CMAKE_LINKER_FLAGS "${CMAKE_LINKER_FLAGS} -fprofile-instr-generate")
 
-# Get the googletest
-FetchContent_Declare(googletest
-					GIT_REPOSITORY https://github.com/google/googletest.git
-					GIT_TAG	v1.15.2
-				    GIT_SHALLOW TRUE
-					GIT_NO_TAGS TRUE
-)
-FetchContent_MakeAvailable(googletest)
+    target_compile_features(${TESTPROJ} PRIVATE cxx_std_17)
+    target_compile_options( ${TESTPROJ}
+                            PRIVATE
+                            $<$<CXX_COMPILER_ID:MSVC>:/std:c++17> )
+    target_sources( ${TESTPROJ}
+                    PRIVATE
+                    ${PROJECT_SOURCE_DIR}/tests/examples.cpp
+                    ${PROJECT_SOURCE_DIR}/tests/test_splituri_narrow.cpp
+                    ${PROJECT_SOURCE_DIR}/tests/test_splituri_wide_nojson.cpp
+                    ${PROJECT_SOURCE_DIR}/tests/test_splituri_wide.cpp)
 
-file(GLOB testSRC "./*.cpp")
+    # Dependencies
+    cpmaddpackage("gh:google/googletest#v1.15.2")
+    target_link_libraries(${TESTPROJ} PRIVATE GTest::gtest_main)
+    cpmaddpackage("gh:nlohmann/json#v3.11.3")
+    target_link_libraries(${TESTPROJ} PRIVATE nlohmann_json::nlohmann_json)
 
-add_executable(splituri_test ${testSRC})
 
-# Common stuff..
-target_link_libraries(splituri_test PRIVATE GTest::gtest_main)
-target_link_libraries(splituri_test PRIVATE nlohmann_json::nlohmann_json)
+    include(GoogleTest)
 
-include(GoogleTest)
+    gtest_discover_tests(${TESTPROJ} XML_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/tests/results")
 
-# In order to properly locate the tests folder, we must provide the environment variable
-# SAMPLES_DIR. This should
-gtest_discover_tests(splituri_test
-                     XML_OUTPUT_DIR "${PROJECT_SOURCE_DIR}/tests"
-					 PROPERTIES ENVIRONMENT "SAMPLES_DIR=${PROJECT_SOURCE_DIR}/tests/samples"
-)
+    include(CTest)
+    message(STATUS "  Finished configuring for ${PROJECT_NAME} -- ${PROJECT_NAME}_BUILD_TESTS = ${${PROJECT_NAME}_BUILD_TESTS}")
+endif()

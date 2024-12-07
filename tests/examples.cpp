@@ -36,7 +36,7 @@
 #include <iostream>
 
 #include "nlohmann/json.hpp"
-#include "../src/SplitUri.hpp"
+#include "../include/siddiqsoft/SplitUri.hpp"
 
 
 namespace siddiqsoft
