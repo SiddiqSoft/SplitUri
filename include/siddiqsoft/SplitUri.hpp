@@ -256,6 +256,7 @@ namespace siddiqsoft
         std::vector<std::basic_string<CharT>>                        path {};
         std::map<std::basic_string<CharT>, std::basic_string<CharT>> query {};
         std::basic_string<CharT>                                     fragment {};
+        std::basic_string<CharT>                                     pathPart {};  // contains the "path" part as a full string
         std::basic_string<CharT>                                     urlPart {};   // contains the "balance" post Authority section
         std::basic_string<CharT>                                     queryPart {}; // contains the "query" part
 
@@ -288,6 +289,7 @@ namespace siddiqsoft
                     // Find next "non-delimiter"
                     pos = str.find_first_of(_NORW(CharT, "/"), lastPos);
                 };
+                return str;
             };
 
             /// @brief Given a sequence of characters of type CharT, parse the elements into a map with each element delimited
@@ -385,11 +387,11 @@ namespace siddiqsoft
 
                     auto posQueryPart = aEndpoint.find(_NORW(CharT, "?"), pos2);
 
-                    auto pathSegment =
-                            aEndpoint.substr(pos2, posQueryPart != std::string::npos ? posQueryPart - (pos2) : std::string::npos);
-
-                    // Parse the path into convenience vector of path elements
-                    if (!pathSegment.empty()) parsePathElements(pathSegment, path);
+                    // Parse the "path" part into vector and store in the pathPart string
+                    if (pathPart = aEndpoint.substr(pos2,
+                                                    posQueryPart != std::string::npos ? posQueryPart - (pos2) : std::string::npos);
+                        !pathPart.empty())
+                        parsePathElements(pathPart, path);
 
                     // Parse the query part if present
                     if (posQueryPart != std::string::npos) {
@@ -500,6 +502,7 @@ namespace siddiqsoft
             dest["query"]     = s.query;
             dest["fragment"]  = s.fragment;
             dest["urlPart"]   = s.urlPart;
+            dest["pathPart"]  = s.pathPart;
             dest["queryPart"] = s.queryPart;
         }
 
@@ -507,6 +510,7 @@ namespace siddiqsoft
             dest["authority"] = w2n(s.authority);
             dest["fragment"]  = w2n(s.fragment);
             dest["urlPart"]   = w2n(s.urlPart);
+            dest["pathPart"]  = w2n(s.pathPart);
             dest["queryPart"] = w2n(s.queryPart);
 
             // We cannot delegate to to_json as it mis-interprets the map<std::wstring,std::wstring>
