@@ -65,7 +65,7 @@ stages:
     - task: gitversion/setup@3.0.0
       displayName: 'Install GitVersion..'
       inputs:
-        versionSpec: '6.x'
+        versionSpec: '6.0'
         preferLatestVersion: true
 
     - task: gitversion/execute@3.0.0
@@ -164,7 +164,7 @@ stages:
     - task: gitversion/setup@3.0.0
       displayName: 'Install GitVersion..'
       inputs:
-        versionSpec: '6.x'
+        versionSpec: '6.0'
         preferLatestVersion: true
 
     - task: gitversion/execute@3.0.0
