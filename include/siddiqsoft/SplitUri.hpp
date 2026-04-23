@@ -742,7 +742,7 @@ namespace siddiqsoft
         }
 
         if constexpr (std::is_same_v<CharT, wchar_t>) {
-            dest["authority"] = w2n(s.authority);
+            to_json(dest["authority"], s.authority);
             dest["fragment"]  = w2n(s.fragment);
             dest["urlPart"]   = w2n(s.urlPart);
             dest["pathPart"]  = w2n(s.pathPart);
