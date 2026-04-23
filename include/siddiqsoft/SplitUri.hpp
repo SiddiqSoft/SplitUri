@@ -313,7 +313,7 @@ namespace siddiqsoft
                     if (splitPos >= endOfSection) {
                         splitPos = endOfSection;
                         valLen   = 0;
-                        keyLen   = splitPos - i;
+                        keyLen   = sectionLen;
                     }
                     else {
                         keyLen = splitPos - i;
@@ -388,9 +388,14 @@ namespace siddiqsoft
                     auto posQueryPart = aEndpoint.find(_NORW(CharT, "?"), pos2);
 
                     // Parse the "path" part into vector and store in the pathPart string
-                    if (pathPart = aEndpoint.substr(pos2,
-                                                    posQueryPart != std::string::npos ? posQueryPart - (pos2) : std::string::npos);
-                        !pathPart.empty())
+                    // Determine the end of the path part: stop at '?' if present, else at '#' if present
+                    size_t pathEnd = std::string::npos;
+                    if (posQueryPart != std::string::npos)
+                        pathEnd = posQueryPart - pos2;
+                    else if (posFragment != std::string::npos)
+                        pathEnd = posFragment - pos2;
+
+                    if (pathPart = aEndpoint.substr(pos2, pathEnd); !pathPart.empty())
                         parsePathElements(pathPart, path);
 
                     // Parse the query part if present
@@ -429,8 +434,11 @@ namespace siddiqsoft
         const std::basic_string<CharT> string() const
         {
             return sourceUri.empty()
-                         ? std::format(_NORW(CharT, "{}://{}{}{}"),
+                         ? std::format(_NORW(CharT, "{}://{}{}{}{}"),
                                        to_string<CharT>(scheme),
+                                       !authority.userInfo.empty()
+                                               ? std::format(_NORW(CharT, "{}@"), authority.userInfo)
+                                               : std::basic_string<CharT> {},
                                        authority.host,
                                        (authority.port > 0) ? std::format(_NORW(CharT, ":{}"), authority.port) : _NORW(CharT, ""),
                                        urlPart)
