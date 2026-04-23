@@ -168,7 +168,8 @@ TEST(helpers_splituri_narrow, test_6a)
 
 TEST(helpers_splituri_narrow, test_6b)
 {
-    auto uri = siddiqsoft::SplitUri(std::string("https://john.doe@www.example.com:123/forum/questions?tag=networking&order=newest#top"));
+    auto uri = siddiqsoft::SplitUri(
+            std::string("https://john.doe@www.example.com:123/forum/questions?tag=networking&order=newest#top"));
     EXPECT_EQ("www.example.com", uri.authority.host);
     EXPECT_EQ("john.doe", uri.authority.userInfo);
     EXPECT_EQ(123, uri.authority.port);
@@ -181,7 +182,8 @@ TEST(helpers_splituri_narrow, test_6b)
 
 TEST(helpers_splituri_narrow, test_6c)
 {
-    auto uri = siddiqsoft::SplitUri(std::string("https://john.doe@www.example.com/forum/questions?tag=networking&order=newest#top"));
+    auto uri =
+            siddiqsoft::SplitUri(std::string("https://john.doe@www.example.com/forum/questions?tag=networking&order=newest#top"));
     EXPECT_EQ("www.example.com", uri.authority.host);
     EXPECT_EQ("john.doe", uri.authority.userInfo);
     EXPECT_EQ(443, uri.authority.port);
@@ -216,7 +218,8 @@ TEST(helpers_splituri_narrow, test7b)
 TEST(helpers_splituri_narrow, test8a)
 {
     auto uri = siddiqsoft::SplitUri(std::string(
-            "https://www.bing.com/search?q=siddiqsoft&go=Search&qs=n&form=QBRE&sp=-1&pq=siddiqsoft&sc=8-10&sk=&cvid=90463834E5F74231B327D1158C16C5EE"));
+            "https://www.bing.com/"
+            "search?q=siddiqsoft&go=Search&qs=n&form=QBRE&sp=-1&pq=siddiqsoft&sc=8-10&sk=&cvid=90463834E5F74231B327D1158C16C5EE"));
     EXPECT_EQ(9, uri.query.size());
     EXPECT_EQ(1, uri.path.size());
     EXPECT_EQ("search", uri.path.at(0));
@@ -227,17 +230,47 @@ TEST(helpers_splituri_narrow, test8a)
 
 TEST(helpers_splituri_narrow, test8b)
 {
-    std::string endpoint {"https://www.google.com/search?q=siddiqsoft&rlz=1C5CHFA_enUS880US881&oq=siddiqsoft&aqs=chrome..69i57j69i60l4.5894j0j15&sourceid=chrome&ie=UTF-8"};
-    auto uri = siddiqsoft::SplitUri(endpoint);
+    std::string endpoint {"https://www.google.com/"
+                          "search?q=siddiqsoft&rlz=1C5CHFA_enUS880US881&oq=siddiqsoft&aqs=chrome..69i57j69i60l4.5894j0j15&sourceid="
+                          "chrome&ie=UTF-8"};
+    auto        uri = siddiqsoft::SplitUri(endpoint);
     EXPECT_EQ(6, uri.query.size());
     EXPECT_EQ(endpoint, std::format("{}://{}{}", uri.scheme, uri.authority.host, uri.urlPart));
     EXPECT_EQ("search", uri.path.at(0));
 }
 
-TEST(helpers_splituri_narrow, test_9a) { using namespace siddiqsoft::splituri_literals; auto uri = "http://n.co:6553/"_Uri; EXPECT_EQ("n.co", uri.authority.host); EXPECT_EQ(6553, uri.authority.port); EXPECT_EQ("/", uri.urlPart); }
-TEST(helpers_splituri_narrow, test_9b) { using namespace siddiqsoft::splituri_literals; auto uri = "http://n.co:6553"_Uri; EXPECT_EQ("n.co", uri.authority.host); EXPECT_EQ(6553, uri.authority.port); EXPECT_EQ("", uri.urlPart); }
-TEST(helpers_splituri_narrow, test_9c) { using namespace siddiqsoft::splituri_literals; auto uri = "http://n.co:65536/"_Uri; EXPECT_EQ("n.co", uri.authority.host); EXPECT_EQ(0, uri.authority.port); EXPECT_EQ("/", uri.urlPart); }
-TEST(helpers_splituri_narrow, test_9d) { using namespace siddiqsoft::splituri_literals; auto uri = "http://n.co:65535"_Uri; EXPECT_EQ("n.co", uri.authority.host); EXPECT_EQ(65535, uri.authority.port); EXPECT_EQ("", uri.urlPart); }
+TEST(helpers_splituri_narrow, test_9a)
+{
+    using namespace siddiqsoft::splituri_literals;
+    auto uri = "http://n.co:6553/"_Uri;
+    EXPECT_EQ("n.co", uri.authority.host);
+    EXPECT_EQ(6553, uri.authority.port);
+    EXPECT_EQ("/", uri.urlPart);
+}
+TEST(helpers_splituri_narrow, test_9b)
+{
+    using namespace siddiqsoft::splituri_literals;
+    auto uri = "http://n.co:6553"_Uri;
+    EXPECT_EQ("n.co", uri.authority.host);
+    EXPECT_EQ(6553, uri.authority.port);
+    EXPECT_EQ("", uri.urlPart);
+}
+TEST(helpers_splituri_narrow, test_9c)
+{
+    using namespace siddiqsoft::splituri_literals;
+    auto uri = "http://n.co:65536/"_Uri;
+    EXPECT_EQ("n.co", uri.authority.host);
+    EXPECT_EQ(0, uri.authority.port);
+    EXPECT_EQ("/", uri.urlPart);
+}
+TEST(helpers_splituri_narrow, test_9d)
+{
+    using namespace siddiqsoft::splituri_literals;
+    auto uri = "http://n.co:65535"_Uri;
+    EXPECT_EQ("n.co", uri.authority.host);
+    EXPECT_EQ(65535, uri.authority.port);
+    EXPECT_EQ("", uri.urlPart);
+}
 
 TEST(helpers_splituri_narrow, test_10)
 {
@@ -263,7 +296,9 @@ TEST(helpers_splituri_narrow, test_10)
 
 TEST(helpers_splituri_narrow, test_99a)
 {
-    auto endpoint = std::string("https://www.bing.com/?toWww=1&redig=https://www.bing.com/search?q=117244609&form=QBLH&sp=-1&pq=19983711434&sc=0-11&qs=n&sk=&cvid=46160ADDF1247EBA6FD76A4F6314D8B");
+    auto endpoint =
+            std::string("https://www.bing.com/?toWww=1&redig=https://www.bing.com/"
+                        "search?q=117244609&form=QBLH&sp=-1&pq=19983711434&sc=0-11&qs=n&sk=&cvid=46160ADDF1247EBA6FD76A4F6314D8B");
     auto uri = siddiqsoft::SplitUri(endpoint);
     EXPECT_EQ("www.bing.com", uri.authority.host);
     EXPECT_EQ(443, uri.authority.port);
@@ -320,24 +355,88 @@ TEST(splituri_construction, const_char_ptr_overload)
 // Empty and invalid input
 // ============================================================================
 
-TEST(splituri_edge_cases, empty_string) { auto uri = siddiqsoft::SplitUri(std::string("")); EXPECT_EQ("", uri.authority.host); EXPECT_TRUE(uri.path.empty()); }
-TEST(splituri_edge_cases, garbage_input) { auto uri = siddiqsoft::SplitUri("not-a-url-at-all"); EXPECT_EQ("", uri.authority.host); EXPECT_TRUE(uri.path.empty()); }
-TEST(splituri_edge_cases, scheme_only_no_authority) { auto uri = siddiqsoft::SplitUri("https://"); EXPECT_EQ("", uri.authority.host); EXPECT_EQ(443, uri.authority.port); }
-TEST(splituri_edge_cases, only_whitespace) { auto uri = siddiqsoft::SplitUri("   "); EXPECT_EQ("", uri.authority.host); EXPECT_TRUE(uri.path.empty()); }
+TEST(splituri_edge_cases, empty_string)
+{
+    auto uri = siddiqsoft::SplitUri(std::string(""));
+    EXPECT_EQ("", uri.authority.host);
+    EXPECT_TRUE(uri.path.empty());
+}
+TEST(splituri_edge_cases, garbage_input)
+{
+    auto uri = siddiqsoft::SplitUri("not-a-url-at-all");
+    EXPECT_EQ("", uri.authority.host);
+    EXPECT_TRUE(uri.path.empty());
+}
+TEST(splituri_edge_cases, scheme_only_no_authority)
+{
+    auto uri = siddiqsoft::SplitUri("https://");
+    EXPECT_EQ("", uri.authority.host);
+    EXPECT_EQ(443, uri.authority.port);
+}
+TEST(splituri_edge_cases, only_whitespace)
+{
+    auto uri = siddiqsoft::SplitUri("   ");
+    EXPECT_EQ("", uri.authority.host);
+    EXPECT_TRUE(uri.path.empty());
+}
 
 // ============================================================================
 // WHATWG: Scheme detection (case-insensitive)
 // ============================================================================
 
-TEST(splituri_whatwg_schemes, http_uppercase) { auto uri = siddiqsoft::SplitUri("HTTP://EXAMPLE.COM/"); EXPECT_EQ(siddiqsoft::UriScheme::WebHttp, uri.scheme); EXPECT_EQ("example.com", uri.authority.host); }
-TEST(splituri_whatwg_schemes, http_mixed_case) { auto uri = siddiqsoft::SplitUri("hTtP://example.com/"); EXPECT_EQ(siddiqsoft::UriScheme::WebHttp, uri.scheme); }
-TEST(splituri_whatwg_schemes, https_mixed_case) { auto uri = siddiqsoft::SplitUri("HtTpS://example.com/"); EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, uri.scheme); }
-TEST(splituri_whatwg_schemes, ws_basic) { auto uri = siddiqsoft::SplitUri("ws://example.com/chat"); EXPECT_EQ(siddiqsoft::UriScheme::WebSocket, uri.scheme); EXPECT_EQ(80, uri.authority.port); }
-TEST(splituri_whatwg_schemes, ws_uppercase) { auto uri = siddiqsoft::SplitUri("WS://EXAMPLE.COM/chat"); EXPECT_EQ(siddiqsoft::UriScheme::WebSocket, uri.scheme); EXPECT_EQ("example.com", uri.authority.host); }
-TEST(splituri_whatwg_schemes, wss_basic) { auto uri = siddiqsoft::SplitUri("wss://example.com/chat"); EXPECT_EQ(siddiqsoft::UriScheme::WebSocketSecure, uri.scheme); EXPECT_EQ(443, uri.authority.port); }
-TEST(splituri_whatwg_schemes, wss_uppercase) { auto uri = siddiqsoft::SplitUri("WSS://EXAMPLE.COM/chat"); EXPECT_EQ(siddiqsoft::UriScheme::WebSocketSecure, uri.scheme); EXPECT_EQ("example.com", uri.authority.host); }
-TEST(splituri_whatwg_schemes, ftp_basic) { auto uri = siddiqsoft::SplitUri("ftp://files.example.com/pub/readme.txt"); EXPECT_EQ(siddiqsoft::UriScheme::Ftp, uri.scheme); EXPECT_EQ(21, uri.authority.port); EXPECT_EQ(2, uri.path.size()); }
-TEST(splituri_whatwg_schemes, ftp_uppercase) { auto uri = siddiqsoft::SplitUri("FTP://FILES.EXAMPLE.COM/pub/"); EXPECT_EQ(siddiqsoft::UriScheme::Ftp, uri.scheme); EXPECT_EQ("files.example.com", uri.authority.host); }
+TEST(splituri_whatwg_schemes, http_uppercase)
+{
+    auto uri = siddiqsoft::SplitUri("HTTP://EXAMPLE.COM/");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebHttp, uri.scheme);
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+TEST(splituri_whatwg_schemes, http_mixed_case)
+{
+    auto uri = siddiqsoft::SplitUri("hTtP://example.com/");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebHttp, uri.scheme);
+}
+TEST(splituri_whatwg_schemes, https_mixed_case)
+{
+    auto uri = siddiqsoft::SplitUri("HtTpS://example.com/");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, uri.scheme);
+}
+TEST(splituri_whatwg_schemes, ws_basic)
+{
+    auto uri = siddiqsoft::SplitUri("ws://example.com/chat");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebSocket, uri.scheme);
+    EXPECT_EQ(80, uri.authority.port);
+}
+TEST(splituri_whatwg_schemes, ws_uppercase)
+{
+    auto uri = siddiqsoft::SplitUri("WS://EXAMPLE.COM/chat");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebSocket, uri.scheme);
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+TEST(splituri_whatwg_schemes, wss_basic)
+{
+    auto uri = siddiqsoft::SplitUri("wss://example.com/chat");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebSocketSecure, uri.scheme);
+    EXPECT_EQ(443, uri.authority.port);
+}
+TEST(splituri_whatwg_schemes, wss_uppercase)
+{
+    auto uri = siddiqsoft::SplitUri("WSS://EXAMPLE.COM/chat");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebSocketSecure, uri.scheme);
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+TEST(splituri_whatwg_schemes, ftp_basic)
+{
+    auto uri = siddiqsoft::SplitUri("ftp://files.example.com/pub/readme.txt");
+    EXPECT_EQ(siddiqsoft::UriScheme::Ftp, uri.scheme);
+    EXPECT_EQ(21, uri.authority.port);
+    EXPECT_EQ(2, uri.path.size());
+}
+TEST(splituri_whatwg_schemes, ftp_uppercase)
+{
+    auto uri = siddiqsoft::SplitUri("FTP://FILES.EXAMPLE.COM/pub/");
+    EXPECT_EQ(siddiqsoft::UriScheme::Ftp, uri.scheme);
+    EXPECT_EQ("files.example.com", uri.authority.host);
+}
 
 // ============================================================================
 // WHATWG: Utility functions
@@ -382,82 +481,288 @@ TEST(splituri_whatwg_utils, to_string_all_schemes)
 // WHATWG: Host lowercasing
 // ============================================================================
 
-TEST(splituri_whatwg_host, lowercase_for_special) { auto uri = siddiqsoft::SplitUri("https://EXAMPLE.COM/path"); EXPECT_EQ("example.com", uri.authority.host); }
-TEST(splituri_whatwg_host, mixed_case_host) { auto uri = siddiqsoft::SplitUri("http://ExAmPlE.CoM/"); EXPECT_EQ("example.com", uri.authority.host); }
-TEST(splituri_whatwg_host, host_with_numbers_hyphens) { auto uri = siddiqsoft::SplitUri("https://My-Host-123.Example.COM:8080/"); EXPECT_EQ("my-host-123.example.com", uri.authority.host); EXPECT_EQ(8080, uri.authority.port); }
+TEST(splituri_whatwg_host, lowercase_for_special)
+{
+    auto uri = siddiqsoft::SplitUri("https://EXAMPLE.COM/path");
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+TEST(splituri_whatwg_host, mixed_case_host)
+{
+    auto uri = siddiqsoft::SplitUri("http://ExAmPlE.CoM/");
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+TEST(splituri_whatwg_host, host_with_numbers_hyphens)
+{
+    auto uri = siddiqsoft::SplitUri("https://My-Host-123.Example.COM:8080/");
+    EXPECT_EQ("my-host-123.example.com", uri.authority.host);
+    EXPECT_EQ(8080, uri.authority.port);
+}
 
 // ============================================================================
 // WHATWG: Input sanitization
 // ============================================================================
 
-TEST(splituri_whatwg_sanitize, strip_leading_spaces) { auto uri = siddiqsoft::SplitUri("   https://example.com/path"); EXPECT_EQ("example.com", uri.authority.host); EXPECT_EQ("/path", uri.urlPart); }
-TEST(splituri_whatwg_sanitize, strip_trailing_spaces) { auto uri = siddiqsoft::SplitUri("https://example.com/path   "); EXPECT_EQ("example.com", uri.authority.host); EXPECT_EQ("/path", uri.urlPart); }
-TEST(splituri_whatwg_sanitize, strip_both_spaces) { auto uri = siddiqsoft::SplitUri("  https://example.com/  "); EXPECT_EQ("example.com", uri.authority.host); EXPECT_EQ("/", uri.urlPart); }
-
-TEST(splituri_whatwg_sanitize, strip_c0_control_chars)
+TEST(splituri_whatwg_sanitize, strip_leading_spaces)
 {
-    std::string input = std::string("\x01\x02") + "https://example.com/" + std::string("\x1F");
-    auto uri = siddiqsoft::SplitUri(input);
+    auto uri = siddiqsoft::SplitUri("   https://example.com/path");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ("/path", uri.urlPart);
+}
+TEST(splituri_whatwg_sanitize, strip_trailing_spaces)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/path   ");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ("/path", uri.urlPart);
+}
+TEST(splituri_whatwg_sanitize, strip_both_spaces)
+{
+    auto uri = siddiqsoft::SplitUri("  https://example.com/  ");
     EXPECT_EQ("example.com", uri.authority.host);
     EXPECT_EQ("/", uri.urlPart);
 }
 
-TEST(splituri_whatwg_sanitize, remove_tab_in_host) { auto uri = siddiqsoft::SplitUri("https://exa\tmple.com/path"); EXPECT_EQ("example.com", uri.authority.host); }
-TEST(splituri_whatwg_sanitize, remove_newline_in_path) { auto uri = siddiqsoft::SplitUri("https://example.com/pa\nth"); EXPECT_EQ("/path", uri.urlPart); }
-TEST(splituri_whatwg_sanitize, remove_carriage_return) { auto uri = siddiqsoft::SplitUri("https://example.com/pa\rth"); EXPECT_EQ("/path", uri.urlPart); }
-TEST(splituri_whatwg_sanitize, remove_mixed_tab_newline_cr) { auto uri = siddiqsoft::SplitUri("ht\ttps://ex\namp\rle.com/p\ta\nth"); EXPECT_EQ("example.com", uri.authority.host); EXPECT_EQ("/path", uri.urlPart); }
+TEST(splituri_whatwg_sanitize, strip_c0_control_chars)
+{
+    std::string input = std::string("\x01\x02") + "https://example.com/" + std::string("\x1F");
+    auto        uri   = siddiqsoft::SplitUri(input);
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ("/", uri.urlPart);
+}
+
+TEST(splituri_whatwg_sanitize, remove_tab_in_host)
+{
+    auto uri = siddiqsoft::SplitUri("https://exa\tmple.com/path");
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+TEST(splituri_whatwg_sanitize, remove_newline_in_path)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/pa\nth");
+    EXPECT_EQ("/path", uri.urlPart);
+}
+TEST(splituri_whatwg_sanitize, remove_carriage_return)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/pa\rth");
+    EXPECT_EQ("/path", uri.urlPart);
+}
+TEST(splituri_whatwg_sanitize, remove_mixed_tab_newline_cr)
+{
+    auto uri = siddiqsoft::SplitUri("ht\ttps://ex\namp\rle.com/p\ta\nth");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ("/path", uri.urlPart);
+}
 
 // ============================================================================
 // WHATWG: Credentials (username and password)
 // ============================================================================
 
-TEST(splituri_whatwg_credentials, username_only) { auto uri = siddiqsoft::SplitUri("https://user@example.com/"); EXPECT_EQ("user", uri.authority.userInfo); EXPECT_EQ("", uri.authority.password); }
-TEST(splituri_whatwg_credentials, username_and_password) { auto uri = siddiqsoft::SplitUri("https://user:pass@example.com/"); EXPECT_EQ("user", uri.authority.userInfo); EXPECT_EQ("pass", uri.authority.password); EXPECT_EQ("example.com", uri.authority.host); }
-TEST(splituri_whatwg_credentials, username_empty_password) { auto uri = siddiqsoft::SplitUri("https://user:@example.com/"); EXPECT_EQ("user", uri.authority.userInfo); EXPECT_EQ("", uri.authority.password); }
-TEST(splituri_whatwg_credentials, password_with_special_chars) { auto uri = siddiqsoft::SplitUri("https://admin:p%40ss%3Aw0rd@example.com/"); EXPECT_EQ("admin", uri.authority.userInfo); EXPECT_EQ("p%40ss%3Aw0rd", uri.authority.password); }
-TEST(splituri_whatwg_credentials, password_with_multiple_colons) { auto uri = siddiqsoft::SplitUri("https://user:pass:word:extra@example.com/"); EXPECT_EQ("user", uri.authority.userInfo); EXPECT_EQ("pass:word:extra", uri.authority.password); }
-TEST(splituri_whatwg_credentials, no_credentials) { auto uri = siddiqsoft::SplitUri("https://example.com/"); EXPECT_EQ("", uri.authority.userInfo); EXPECT_EQ("", uri.authority.password); }
-TEST(splituri_whatwg_credentials, ftp_with_credentials) { auto uri = siddiqsoft::SplitUri("ftp://admin:secret@files.example.com:2121/pub/"); EXPECT_EQ("admin", uri.authority.userInfo); EXPECT_EQ("secret", uri.authority.password); EXPECT_EQ("files.example.com", uri.authority.host); EXPECT_EQ(2121, uri.authority.port); }
+TEST(splituri_whatwg_credentials, username_only)
+{
+    auto uri = siddiqsoft::SplitUri("https://user@example.com/");
+    EXPECT_EQ("user", uri.authority.userInfo);
+    EXPECT_EQ("", uri.authority.password);
+}
+TEST(splituri_whatwg_credentials, username_and_password)
+{
+    auto uri = siddiqsoft::SplitUri("https://user:pass@example.com/");
+    EXPECT_EQ("user", uri.authority.userInfo);
+    EXPECT_EQ("pass", uri.authority.password);
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+TEST(splituri_whatwg_credentials, username_empty_password)
+{
+    auto uri = siddiqsoft::SplitUri("https://user:@example.com/");
+    EXPECT_EQ("user", uri.authority.userInfo);
+    EXPECT_EQ("", uri.authority.password);
+}
+TEST(splituri_whatwg_credentials, password_with_special_chars)
+{
+    auto uri = siddiqsoft::SplitUri("https://admin:p%40ss%3Aw0rd@example.com/");
+    EXPECT_EQ("admin", uri.authority.userInfo);
+    EXPECT_EQ("p%40ss%3Aw0rd", uri.authority.password);
+}
+TEST(splituri_whatwg_credentials, password_with_multiple_colons)
+{
+    auto uri = siddiqsoft::SplitUri("https://user:pass:word:extra@example.com/");
+    EXPECT_EQ("user", uri.authority.userInfo);
+    EXPECT_EQ("pass:word:extra", uri.authority.password);
+}
+TEST(splituri_whatwg_credentials, no_credentials)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/");
+    EXPECT_EQ("", uri.authority.userInfo);
+    EXPECT_EQ("", uri.authority.password);
+}
+TEST(splituri_whatwg_credentials, ftp_with_credentials)
+{
+    auto uri = siddiqsoft::SplitUri("ftp://admin:secret@files.example.com:2121/pub/");
+    EXPECT_EQ("admin", uri.authority.userInfo);
+    EXPECT_EQ("secret", uri.authority.password);
+    EXPECT_EQ("files.example.com", uri.authority.host);
+    EXPECT_EQ(2121, uri.authority.port);
+}
 
 // ============================================================================
 // WHATWG: Port validation
 // ============================================================================
 
-TEST(splituri_whatwg_port, explicit_default_port) { auto uri = siddiqsoft::SplitUri("https://example.com:443/"); EXPECT_EQ(443, uri.authority.port); }
-TEST(splituri_whatwg_port, non_default_port) { auto uri = siddiqsoft::SplitUri("https://example.com:8443/"); EXPECT_EQ(8443, uri.authority.port); }
-TEST(splituri_whatwg_port, port_zero) { auto uri = siddiqsoft::SplitUri("http://example.com:0/"); EXPECT_EQ(0, uri.authority.port); }
-TEST(splituri_whatwg_port, port_max_valid) { auto uri = siddiqsoft::SplitUri("http://example.com:65535/"); EXPECT_EQ(65535, uri.authority.port); }
-TEST(splituri_whatwg_port, port_out_of_range_65536) { auto uri = siddiqsoft::SplitUri("http://example.com:65536/"); EXPECT_EQ(0, uri.authority.port); }
-TEST(splituri_whatwg_port, port_out_of_range_large) { auto uri = siddiqsoft::SplitUri("https://example.com:70000/"); EXPECT_EQ(0, uri.authority.port); }
-TEST(splituri_whatwg_port, port_out_of_range_very_large) { auto uri = siddiqsoft::SplitUri("https://example.com:999999/"); EXPECT_EQ(0, uri.authority.port); }
-TEST(splituri_whatwg_port, no_port_http_default) { auto uri = siddiqsoft::SplitUri("http://example.com/"); EXPECT_EQ(80, uri.authority.port); }
-TEST(splituri_whatwg_port, no_port_https_default) { auto uri = siddiqsoft::SplitUri("https://example.com/"); EXPECT_EQ(443, uri.authority.port); }
-TEST(splituri_whatwg_port, no_port_ws_default) { auto uri = siddiqsoft::SplitUri("ws://example.com/"); EXPECT_EQ(80, uri.authority.port); }
-TEST(splituri_whatwg_port, no_port_wss_default) { auto uri = siddiqsoft::SplitUri("wss://example.com/"); EXPECT_EQ(443, uri.authority.port); }
-TEST(splituri_whatwg_port, no_port_ftp_default) { auto uri = siddiqsoft::SplitUri("ftp://example.com/"); EXPECT_EQ(21, uri.authority.port); }
+TEST(splituri_whatwg_port, explicit_default_port)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com:443/");
+    EXPECT_EQ(443, uri.authority.port);
+}
+TEST(splituri_whatwg_port, non_default_port)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com:8443/");
+    EXPECT_EQ(8443, uri.authority.port);
+}
+TEST(splituri_whatwg_port, port_zero)
+{
+    auto uri = siddiqsoft::SplitUri("http://example.com:0/");
+    EXPECT_EQ(0, uri.authority.port);
+}
+TEST(splituri_whatwg_port, port_max_valid)
+{
+    auto uri = siddiqsoft::SplitUri("http://example.com:65535/");
+    EXPECT_EQ(65535, uri.authority.port);
+}
+TEST(splituri_whatwg_port, port_out_of_range_65536)
+{
+    auto uri = siddiqsoft::SplitUri("http://example.com:65536/");
+    EXPECT_EQ(0, uri.authority.port);
+}
+TEST(splituri_whatwg_port, port_out_of_range_large)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com:70000/");
+    EXPECT_EQ(0, uri.authority.port);
+}
+TEST(splituri_whatwg_port, port_out_of_range_very_large)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com:999999/");
+    EXPECT_EQ(0, uri.authority.port);
+}
+TEST(splituri_whatwg_port, no_port_http_default)
+{
+    auto uri = siddiqsoft::SplitUri("http://example.com/");
+    EXPECT_EQ(80, uri.authority.port);
+}
+TEST(splituri_whatwg_port, no_port_https_default)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/");
+    EXPECT_EQ(443, uri.authority.port);
+}
+TEST(splituri_whatwg_port, no_port_ws_default)
+{
+    auto uri = siddiqsoft::SplitUri("ws://example.com/");
+    EXPECT_EQ(80, uri.authority.port);
+}
+TEST(splituri_whatwg_port, no_port_wss_default)
+{
+    auto uri = siddiqsoft::SplitUri("wss://example.com/");
+    EXPECT_EQ(443, uri.authority.port);
+}
+TEST(splituri_whatwg_port, no_port_ftp_default)
+{
+    auto uri = siddiqsoft::SplitUri("ftp://example.com/");
+    EXPECT_EQ(21, uri.authority.port);
+}
 
 // ============================================================================
 // WHATWG: IPv6 addresses
 // ============================================================================
 
-TEST(splituri_whatwg_ipv6, basic_ipv6) { auto uri = siddiqsoft::SplitUri("http://[::1]/path"); EXPECT_EQ("[::1]", uri.authority.host); EXPECT_EQ(80, uri.authority.port); EXPECT_EQ("/path", uri.urlPart); }
-TEST(splituri_whatwg_ipv6, ipv6_with_port) { auto uri = siddiqsoft::SplitUri("http://[::1]:8080/path"); EXPECT_EQ("[::1]", uri.authority.host); EXPECT_EQ(8080, uri.authority.port); EXPECT_EQ("/path", uri.urlPart); }
-TEST(splituri_whatwg_ipv6, full_ipv6) { auto uri = siddiqsoft::SplitUri("https://[2001:db8::7]:443/c=GB?objectClass=one"); EXPECT_EQ("[2001:db8::7]", uri.authority.host); EXPECT_EQ(443, uri.authority.port); EXPECT_EQ("objectClass=one", uri.queryPart); }
-TEST(splituri_whatwg_ipv6, ipv6_no_port_no_path) { auto uri = siddiqsoft::SplitUri("http://[::1]"); EXPECT_EQ("[::1]", uri.authority.host); EXPECT_EQ(80, uri.authority.port); EXPECT_EQ("", uri.urlPart); }
+TEST(splituri_whatwg_ipv6, basic_ipv6)
+{
+    auto uri = siddiqsoft::SplitUri("http://[::1]/path");
+    EXPECT_EQ("[::1]", uri.authority.host);
+    EXPECT_EQ(80, uri.authority.port);
+    EXPECT_EQ("/path", uri.urlPart);
+}
+TEST(splituri_whatwg_ipv6, ipv6_with_port)
+{
+    auto uri = siddiqsoft::SplitUri("http://[::1]:8080/path");
+    EXPECT_EQ("[::1]", uri.authority.host);
+    EXPECT_EQ(8080, uri.authority.port);
+    EXPECT_EQ("/path", uri.urlPart);
+}
+TEST(splituri_whatwg_ipv6, full_ipv6)
+{
+    auto uri = siddiqsoft::SplitUri("https://[2001:db8::7]:443/c=GB?objectClass=one");
+    EXPECT_EQ("[2001:db8::7]", uri.authority.host);
+    EXPECT_EQ(443, uri.authority.port);
+    EXPECT_EQ("objectClass=one", uri.queryPart);
+}
+TEST(splituri_whatwg_ipv6, ipv6_no_port_no_path)
+{
+    auto uri = siddiqsoft::SplitUri("http://[::1]");
+    EXPECT_EQ("[::1]", uri.authority.host);
+    EXPECT_EQ(80, uri.authority.port);
+    EXPECT_EQ("", uri.urlPart);
+}
 
 // ============================================================================
 // WHATWG: Path dot-segment resolution
 // ============================================================================
 
-TEST(splituri_whatwg_path, single_dot_removed) { auto uri = siddiqsoft::SplitUri("https://example.com/a/./b/./c"); EXPECT_EQ(3, uri.path.size()); EXPECT_EQ("a", uri.path.at(0)); EXPECT_EQ("b", uri.path.at(1)); EXPECT_EQ("c", uri.path.at(2)); }
-TEST(splituri_whatwg_path, double_dot_pops_parent) { auto uri = siddiqsoft::SplitUri("https://example.com/a/b/../c"); EXPECT_EQ(2, uri.path.size()); EXPECT_EQ("a", uri.path.at(0)); EXPECT_EQ("c", uri.path.at(1)); }
-TEST(splituri_whatwg_path, double_dot_at_root) { auto uri = siddiqsoft::SplitUri("https://example.com/../path"); EXPECT_EQ(1, uri.path.size()); EXPECT_EQ("path", uri.path.at(0)); }
-TEST(splituri_whatwg_path, multiple_double_dots) { auto uri = siddiqsoft::SplitUri("https://example.com/a/b/c/../../d"); EXPECT_EQ(2, uri.path.size()); EXPECT_EQ("a", uri.path.at(0)); EXPECT_EQ("d", uri.path.at(1)); }
-TEST(splituri_whatwg_path, all_dots_collapse) { auto uri = siddiqsoft::SplitUri("https://example.com/a/../b/../c/.."); EXPECT_EQ(0, uri.path.size()); }
-TEST(splituri_whatwg_path, mixed_dots) { auto uri = siddiqsoft::SplitUri("https://example.com/a/./b/../c/./d"); EXPECT_EQ(3, uri.path.size()); EXPECT_EQ("a", uri.path.at(0)); EXPECT_EQ("c", uri.path.at(1)); EXPECT_EQ("d", uri.path.at(2)); }
-TEST(splituri_whatwg_path, no_path) { auto uri = siddiqsoft::SplitUri("https://example.com"); EXPECT_TRUE(uri.path.empty()); EXPECT_EQ("", uri.urlPart); }
-TEST(splituri_whatwg_path, root_path_only) { auto uri = siddiqsoft::SplitUri("https://example.com/"); EXPECT_TRUE(uri.path.empty()); EXPECT_EQ("/", uri.urlPart); }
-TEST(splituri_whatwg_path, deep_path) { auto uri = siddiqsoft::SplitUri("https://example.com/a/b/c/d/e/f"); EXPECT_EQ(6, uri.path.size()); EXPECT_EQ("a", uri.path.at(0)); EXPECT_EQ("f", uri.path.at(5)); }
+TEST(splituri_whatwg_path, single_dot_removed)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/./b/./c");
+    EXPECT_EQ(3, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("b", uri.path.at(1));
+    EXPECT_EQ("c", uri.path.at(2));
+}
+TEST(splituri_whatwg_path, double_dot_pops_parent)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/b/../c");
+    EXPECT_EQ(2, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("c", uri.path.at(1));
+}
+TEST(splituri_whatwg_path, double_dot_at_root)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/../path");
+    EXPECT_EQ(1, uri.path.size());
+    EXPECT_EQ("path", uri.path.at(0));
+}
+TEST(splituri_whatwg_path, multiple_double_dots)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/b/c/../../d");
+    EXPECT_EQ(2, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("d", uri.path.at(1));
+}
+TEST(splituri_whatwg_path, all_dots_collapse)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/../b/../c/..");
+    EXPECT_EQ(0, uri.path.size());
+}
+TEST(splituri_whatwg_path, mixed_dots)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/./b/../c/./d");
+    EXPECT_EQ(3, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("c", uri.path.at(1));
+    EXPECT_EQ("d", uri.path.at(2));
+}
+TEST(splituri_whatwg_path, no_path)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com");
+    EXPECT_TRUE(uri.path.empty());
+    EXPECT_EQ("", uri.urlPart);
+}
+TEST(splituri_whatwg_path, root_path_only)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/");
+    EXPECT_TRUE(uri.path.empty());
+    EXPECT_EQ("/", uri.urlPart);
+}
+TEST(splituri_whatwg_path, deep_path)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/b/c/d/e/f");
+    EXPECT_EQ(6, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("f", uri.path.at(5));
+}
 
 // ============================================================================
 // WHATWG: Backslash normalization for special schemes
@@ -477,34 +782,124 @@ TEST(splituri_whatwg_backslash, backslash_as_first_path_separator)
 // Fragment and query edge cases
 // ============================================================================
 
-TEST(splituri_fragment_query, fragment_only_no_query) { auto uri = siddiqsoft::SplitUri("https://example.com/page#section"); EXPECT_EQ("section", uri.fragment); EXPECT_EQ("", uri.queryPart); EXPECT_TRUE(uri.query.empty()); EXPECT_EQ(1, uri.path.size()); }
-TEST(splituri_fragment_query, query_only_no_fragment) { auto uri = siddiqsoft::SplitUri("https://example.com/page?key=val"); EXPECT_EQ("", uri.fragment); EXPECT_EQ("key=val", uri.queryPart); EXPECT_EQ("val", uri.query.at("key")); }
-TEST(splituri_fragment_query, query_and_fragment) { auto uri = siddiqsoft::SplitUri("https://example.com/page?key=val#frag"); EXPECT_EQ("frag", uri.fragment); EXPECT_EQ("key=val", uri.queryPart); EXPECT_EQ("val", uri.query.at("key")); }
-TEST(splituri_fragment_query, empty_query) { auto uri = siddiqsoft::SplitUri("https://example.com/page?"); EXPECT_EQ("", uri.queryPart); EXPECT_TRUE(uri.query.empty()); }
-TEST(splituri_fragment_query, empty_fragment) { auto uri = siddiqsoft::SplitUri("https://example.com/page#"); EXPECT_EQ("", uri.fragment); }
-TEST(splituri_fragment_query, query_with_no_value) { auto uri = siddiqsoft::SplitUri("https://example.com/?flag"); EXPECT_EQ(1, uri.query.size()); EXPECT_TRUE(uri.query.contains("flag")); EXPECT_EQ("", uri.query.at("flag")); }
-TEST(splituri_fragment_query, multiple_query_params) { auto uri = siddiqsoft::SplitUri("https://example.com/?a=1&b=2&c=3&d=4&e=5"); EXPECT_EQ(5, uri.query.size()); EXPECT_EQ("1", uri.query.at("a")); EXPECT_EQ("5", uri.query.at("e")); }
+TEST(splituri_fragment_query, fragment_only_no_query)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/page#section");
+    EXPECT_EQ("section", uri.fragment);
+    EXPECT_EQ("", uri.queryPart);
+    EXPECT_TRUE(uri.query.empty());
+    EXPECT_EQ(1, uri.path.size());
+}
+TEST(splituri_fragment_query, query_only_no_fragment)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/page?key=val");
+    EXPECT_EQ("", uri.fragment);
+    EXPECT_EQ("key=val", uri.queryPart);
+    EXPECT_EQ("val", uri.query.at("key"));
+}
+TEST(splituri_fragment_query, query_and_fragment)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/page?key=val#frag");
+    EXPECT_EQ("frag", uri.fragment);
+    EXPECT_EQ("key=val", uri.queryPart);
+    EXPECT_EQ("val", uri.query.at("key"));
+}
+TEST(splituri_fragment_query, empty_query)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/page?");
+    EXPECT_EQ("", uri.queryPart);
+    EXPECT_TRUE(uri.query.empty());
+}
+TEST(splituri_fragment_query, empty_fragment)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/page#");
+    EXPECT_EQ("", uri.fragment);
+}
+TEST(splituri_fragment_query, query_with_no_value)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/?flag");
+    EXPECT_EQ(1, uri.query.size());
+    EXPECT_TRUE(uri.query.contains("flag"));
+    EXPECT_EQ("", uri.query.at("flag"));
+}
+TEST(splituri_fragment_query, multiple_query_params)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/?a=1&b=2&c=3&d=4&e=5");
+    EXPECT_EQ(5, uri.query.size());
+    EXPECT_EQ("1", uri.query.at("a"));
+    EXPECT_EQ("5", uri.query.at("e"));
+}
 
 // ============================================================================
 // Authority serialization (operator string)
 // ============================================================================
 
-TEST(splituri_authority_serialization, host_only) { siddiqsoft::AuthorityHttp<char> a; a.host = "example.com"; EXPECT_EQ("example.com", std::string(a)); }
-TEST(splituri_authority_serialization, host_and_port) { siddiqsoft::AuthorityHttp<char> a; a.host = "example.com"; a.port = 8080; EXPECT_EQ("example.com:8080", std::string(a)); }
-TEST(splituri_authority_serialization, user_host_port) { siddiqsoft::AuthorityHttp<char> a; a.userInfo = "admin"; a.host = "example.com"; a.port = 443; EXPECT_EQ("admin@example.com:443", std::string(a)); }
-TEST(splituri_authority_serialization, user_password_host_port) { siddiqsoft::AuthorityHttp<char> a; a.userInfo = "admin"; a.password = "secret"; a.host = "example.com"; a.port = 443; EXPECT_EQ("admin:secret@example.com:443", std::string(a)); }
-TEST(splituri_authority_serialization, user_no_password) { siddiqsoft::AuthorityHttp<char> a; a.userInfo = "admin"; a.host = "example.com"; EXPECT_EQ("admin@example.com", std::string(a)); }
+TEST(splituri_authority_serialization, host_only)
+{
+    siddiqsoft::AuthorityHttp<char> a;
+    a.host = "example.com";
+    EXPECT_EQ("example.com", std::string(a));
+}
+TEST(splituri_authority_serialization, host_and_port)
+{
+    siddiqsoft::AuthorityHttp<char> a;
+    a.host = "example.com";
+    a.port = 8080;
+    EXPECT_EQ("example.com:8080", std::string(a));
+}
+TEST(splituri_authority_serialization, user_host_port)
+{
+    siddiqsoft::AuthorityHttp<char> a;
+    a.userInfo = "admin";
+    a.host     = "example.com";
+    a.port     = 443;
+    EXPECT_EQ("admin@example.com:443", std::string(a));
+}
+TEST(splituri_authority_serialization, user_password_host_port)
+{
+    siddiqsoft::AuthorityHttp<char> a;
+    a.userInfo = "admin";
+    a.password = "secret";
+    a.host     = "example.com";
+    a.port     = 443;
+    EXPECT_EQ("admin:secret@example.com:443", std::string(a));
+}
+TEST(splituri_authority_serialization, user_no_password)
+{
+    siddiqsoft::AuthorityHttp<char> a;
+    a.userInfo = "admin";
+    a.host     = "example.com";
+    EXPECT_EQ("admin@example.com", std::string(a));
+}
 
 // ============================================================================
 // std::format support
 // ============================================================================
 
-TEST(splituri_format, format_scheme_http) { EXPECT_EQ("http", std::format("{}", siddiqsoft::UriScheme::WebHttp)); }
-TEST(splituri_format, format_scheme_https) { EXPECT_EQ("https", std::format("{}", siddiqsoft::UriScheme::WebHttps)); }
-TEST(splituri_format, format_scheme_ws) { EXPECT_EQ("ws", std::format("{}", siddiqsoft::UriScheme::WebSocket)); }
-TEST(splituri_format, format_scheme_wss) { EXPECT_EQ("wss", std::format("{}", siddiqsoft::UriScheme::WebSocketSecure)); }
-TEST(splituri_format, format_scheme_ftp) { EXPECT_EQ("ftp", std::format("{}", siddiqsoft::UriScheme::Ftp)); }
-TEST(splituri_format, format_scheme_file) { EXPECT_EQ("file", std::format("{}", siddiqsoft::UriScheme::File)); }
+TEST(splituri_format, format_scheme_http)
+{
+    EXPECT_EQ("http", std::format("{}", siddiqsoft::UriScheme::WebHttp));
+}
+TEST(splituri_format, format_scheme_https)
+{
+    EXPECT_EQ("https", std::format("{}", siddiqsoft::UriScheme::WebHttps));
+}
+TEST(splituri_format, format_scheme_ws)
+{
+    EXPECT_EQ("ws", std::format("{}", siddiqsoft::UriScheme::WebSocket));
+}
+TEST(splituri_format, format_scheme_wss)
+{
+    EXPECT_EQ("wss", std::format("{}", siddiqsoft::UriScheme::WebSocketSecure));
+}
+TEST(splituri_format, format_scheme_ftp)
+{
+    EXPECT_EQ("ftp", std::format("{}", siddiqsoft::UriScheme::Ftp));
+}
+TEST(splituri_format, format_scheme_file)
+{
+    EXPECT_EQ("file", std::format("{}", siddiqsoft::UriScheme::File));
+}
 
 TEST(splituri_format, format_authority_with_password)
 {
@@ -524,7 +919,7 @@ TEST(splituri_format, format_full_uri)
 
 TEST(splituri_json, basic_json_serialization)
 {
-    auto uri = siddiqsoft::SplitUri("https://user:pass@example.com:8443/api?key=val#sec");
+    auto           uri = siddiqsoft::SplitUri("https://user:pass@example.com:8443/api?key=val#sec");
     nlohmann::json doc = uri;
     EXPECT_TRUE(doc.is_object());
     EXPECT_EQ("https", doc.at("scheme").get<std::string>());
@@ -540,15 +935,19 @@ TEST(splituri_json, basic_json_serialization)
 TEST(splituri_json, json_scheme_enum_serialization)
 {
     nlohmann::json j;
-    j = siddiqsoft::UriScheme::WebHttp; EXPECT_EQ("http", j.get<std::string>());
-    j = siddiqsoft::UriScheme::WebSocket; EXPECT_EQ("ws", j.get<std::string>());
-    j = siddiqsoft::UriScheme::Ftp; EXPECT_EQ("ftp", j.get<std::string>());
-    j = siddiqsoft::UriScheme::File; EXPECT_EQ("file", j.get<std::string>());
+    j = siddiqsoft::UriScheme::WebHttp;
+    EXPECT_EQ("http", j.get<std::string>());
+    j = siddiqsoft::UriScheme::WebSocket;
+    EXPECT_EQ("ws", j.get<std::string>());
+    j = siddiqsoft::UriScheme::Ftp;
+    EXPECT_EQ("ftp", j.get<std::string>());
+    j = siddiqsoft::UriScheme::File;
+    EXPECT_EQ("file", j.get<std::string>());
 }
 
 TEST(splituri_json, json_no_credentials)
 {
-    auto uri = siddiqsoft::SplitUri("https://example.com/");
+    auto           uri = siddiqsoft::SplitUri("https://example.com/");
     nlohmann::json doc = uri;
     EXPECT_EQ("", doc.at("authority").at("userInfo").get<std::string>());
     EXPECT_EQ("", doc.at("authority").at("password").get<std::string>());
@@ -558,9 +957,18 @@ TEST(splituri_json, json_no_credentials)
 // w2n helper
 // ============================================================================
 
-TEST(splituri_helpers, w2n_empty) { EXPECT_EQ("", siddiqsoft::w2n(L"")); }
-TEST(splituri_helpers, w2n_basic) { EXPECT_EQ("hello", siddiqsoft::w2n(L"hello")); }
-TEST(splituri_helpers, w2n_with_numbers) { EXPECT_EQ("test123", siddiqsoft::w2n(L"test123")); }
+TEST(splituri_helpers, w2n_empty)
+{
+    EXPECT_EQ("", siddiqsoft::w2n(L""));
+}
+TEST(splituri_helpers, w2n_basic)
+{
+    EXPECT_EQ("hello", siddiqsoft::w2n(L"hello"));
+}
+TEST(splituri_helpers, w2n_with_numbers)
+{
+    EXPECT_EQ("test123", siddiqsoft::w2n(L"test123"));
+}
 
 // ============================================================================
 // Literal operator
@@ -593,42 +1001,368 @@ TEST(splituri_literals_test, narrow_literal_complex)
 TEST(splituri_rebuild, rebuild_from_components)
 {
     siddiqsoft::Uri<> uri;
-    uri.scheme = siddiqsoft::UriScheme::WebHttps;
+    uri.scheme         = siddiqsoft::UriScheme::WebHttps;
     uri.authority.host = "example.com";
     uri.authority.port = 443;
-    uri.urlPart = "/path";
-    auto result = uri.string();
+    uri.urlPart        = "/path";
+    auto result        = uri.string();
     EXPECT_EQ("https://example.com:443/path", result);
 }
 
 TEST(splituri_rebuild, rebuild_with_credentials)
 {
     siddiqsoft::Uri<> uri;
-    uri.scheme = siddiqsoft::UriScheme::WebHttps;
+    uri.scheme             = siddiqsoft::UriScheme::WebHttps;
     uri.authority.userInfo = "admin";
     uri.authority.password = "secret";
-    uri.authority.host = "example.com";
-    uri.authority.port = 443;
-    uri.urlPart = "/";
-    auto result = uri.string();
+    uri.authority.host     = "example.com";
+    uri.authority.port     = 443;
+    uri.urlPart            = "/";
+    auto result            = uri.string();
     EXPECT_EQ("https://admin:secret@example.com:443/", result);
 }
 
 TEST(splituri_rebuild, rebuild_user_no_password)
 {
     siddiqsoft::Uri<> uri;
-    uri.scheme = siddiqsoft::UriScheme::WebHttps;
+    uri.scheme             = siddiqsoft::UriScheme::WebHttps;
     uri.authority.userInfo = "admin";
-    uri.authority.host = "example.com";
-    uri.authority.port = 443;
-    uri.urlPart = "/";
-    auto result = uri.string();
+    uri.authority.host     = "example.com";
+    uri.authority.port     = 443;
+    uri.urlPart            = "/";
+    auto result            = uri.string();
     EXPECT_EQ("https://admin@example.com:443/", result);
 }
 
 TEST(splituri_rebuild, parsed_uri_returns_original)
 {
     std::string original = "https://example.com:8080/path?q=1#frag";
-    auto uri = siddiqsoft::SplitUri(original);
+    auto        uri      = siddiqsoft::SplitUri(original);
     EXPECT_EQ(original, uri.string());
+}
+
+// ============================================================================
+// Percent-encoded dot segments (WHATWG Section 4.1)
+// ============================================================================
+
+TEST(splituri_whatwg_path, percent_encoded_single_dot_lowercase)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/%2e/b");
+    EXPECT_EQ(2, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("b", uri.path.at(1));
+}
+
+TEST(splituri_whatwg_path, percent_encoded_single_dot_uppercase)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/%2E/b");
+    EXPECT_EQ(2, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("b", uri.path.at(1));
+}
+
+TEST(splituri_whatwg_path, percent_encoded_double_dot_full)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/b/%2e%2e/c");
+    EXPECT_EQ(2, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("c", uri.path.at(1));
+}
+
+TEST(splituri_whatwg_path, percent_encoded_double_dot_mixed_dot_2e)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/b/.%2e/c");
+    EXPECT_EQ(2, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("c", uri.path.at(1));
+}
+
+TEST(splituri_whatwg_path, percent_encoded_double_dot_mixed_2e_dot)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/b/%2e./c");
+    EXPECT_EQ(2, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("c", uri.path.at(1));
+}
+
+TEST(splituri_whatwg_path, percent_encoded_double_dot_uppercase_2E)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/b/%2E%2E/c");
+    EXPECT_EQ(2, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("c", uri.path.at(1));
+}
+
+TEST(splituri_whatwg_path, not_a_dot_segment)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/%2f/b");
+    EXPECT_EQ(3, uri.path.size());
+    EXPECT_EQ("%2f", uri.path.at(1));
+}
+
+TEST(splituri_whatwg_ipv6, ipv6_port_out_of_range)
+{
+    auto uri = siddiqsoft::SplitUri("http://[::1]:70000/path");
+    EXPECT_EQ("[::1]", uri.authority.host);
+    EXPECT_EQ(0, uri.authority.port);
+}
+
+TEST(splituri_whatwg_ipv6, ipv6_non_numeric_port)
+{
+    auto uri = siddiqsoft::SplitUri("http://[::1]:abc/path");
+    EXPECT_EQ("[::1]", uri.authority.host);
+}
+
+TEST(splituri_whatwg_ipv6, ipv6_full_address_no_port)
+{
+    auto uri = siddiqsoft::SplitUri("https://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]/path");
+    EXPECT_EQ("[2001:0db8:85a3:0000:0000:8a2e:0370:7334]", uri.authority.host);
+    EXPECT_EQ(443, uri.authority.port);
+}
+
+TEST(splituri_whatwg_port, non_numeric_port)
+{
+    auto uri = siddiqsoft::SplitUri("http://example.com:abc/path");
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+
+TEST(splituri_whatwg_port, host_colon_empty_port)
+{
+    auto uri = siddiqsoft::SplitUri("http://example.com:/path");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ(80, uri.authority.port);
+    EXPECT_EQ("/path", uri.urlPart);
+}
+
+TEST(splituri_fragment_query, query_key_equals_no_value)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/?key=");
+    EXPECT_EQ(1, uri.query.size());
+    EXPECT_TRUE(uri.query.contains("key"));
+}
+
+TEST(splituri_fragment_query, query_multiple_flags_and_values)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/?a&b=2&c&d=4");
+    EXPECT_EQ(4, uri.query.size());
+    EXPECT_EQ("", uri.query.at("a"));
+    EXPECT_EQ("2", uri.query.at("b"));
+    EXPECT_EQ("", uri.query.at("c"));
+    EXPECT_EQ("4", uri.query.at("d"));
+}
+
+TEST(splituri_fragment_query, query_before_fragment)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/?q=test#frag");
+    EXPECT_EQ("q=test", uri.queryPart);
+    EXPECT_EQ("test", uri.query.at("q"));
+    EXPECT_EQ("frag", uri.fragment);
+}
+
+TEST(splituri_whatwg_backslash, mixed_slashes)
+{
+    auto uri = siddiqsoft::SplitUri("http://example.com/path\\to/file");
+    EXPECT_EQ(3, uri.path.size());
+    EXPECT_EQ("path", uri.path.at(0));
+    EXPECT_EQ("to", uri.path.at(1));
+    EXPECT_EQ("file", uri.path.at(2));
+}
+
+TEST(splituri_whatwg_backslash, backslash_only_path)
+{
+    auto uri = siddiqsoft::SplitUri("http://example.com\\file.txt");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ(1, uri.path.size());
+    EXPECT_EQ("file.txt", uri.path.at(0));
+}
+
+TEST(splituri_conversion, implicit_string_conversion)
+{
+    auto        uri = siddiqsoft::SplitUri("https://example.com/path?q=1#frag");
+    std::string s   = uri;
+    EXPECT_EQ("https://example.com/path?q=1#frag", s);
+}
+
+TEST(splituri_rebuild, rebuild_port_zero_omitted)
+{
+    siddiqsoft::Uri<> uri;
+    uri.scheme         = siddiqsoft::UriScheme::WebHttp;
+    uri.authority.host = "example.com";
+    uri.authority.port = 0;
+    uri.urlPart        = "/";
+    EXPECT_EQ("http://example.com/", uri.string());
+}
+
+TEST(splituri_rebuild, rebuild_no_urlpart)
+{
+    siddiqsoft::Uri<> uri;
+    uri.scheme         = siddiqsoft::UriScheme::WebHttp;
+    uri.authority.host = "example.com";
+    uri.authority.port = 80;
+    EXPECT_EQ("http://example.com:80", uri.string());
+}
+
+TEST(splituri_whatwg_utils, to_string_remaining_schemes)
+{
+    EXPECT_EQ("ldap", siddiqsoft::to_string<char>(siddiqsoft::UriScheme::Ldap));
+    EXPECT_EQ("mailto", siddiqsoft::to_string<char>(siddiqsoft::UriScheme::Mailto));
+    EXPECT_EQ("news", siddiqsoft::to_string<char>(siddiqsoft::UriScheme::News));
+    EXPECT_EQ("tel", siddiqsoft::to_string<char>(siddiqsoft::UriScheme::Tel));
+    EXPECT_EQ("telnet", siddiqsoft::to_string<char>(siddiqsoft::UriScheme::Telnet));
+    EXPECT_EQ("urn", siddiqsoft::to_string<char>(siddiqsoft::UriScheme::Urn));
+}
+
+TEST(splituri_whatwg_utils, is_special_scheme_all_non_special)
+{
+    EXPECT_FALSE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::News));
+    EXPECT_FALSE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::Tel));
+    EXPECT_FALSE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::Telnet));
+    EXPECT_FALSE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::Urn));
+}
+
+TEST(splituri_whatwg_utils, default_port_non_special)
+{
+    EXPECT_EQ(0, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::Ldap));
+    EXPECT_EQ(0, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::Mailto));
+    EXPECT_EQ(0, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::News));
+    EXPECT_EQ(0, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::Tel));
+    EXPECT_EQ(0, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::Telnet));
+    EXPECT_EQ(0, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::Urn));
+}
+
+TEST(splituri_authority_types, authority_ldap_serialization)
+{
+    siddiqsoft::AuthorityLdap<char> ldap;
+    ldap.host = "dc=example,dc=com";
+    EXPECT_EQ("[dc=example,dc=com]", std::string(ldap));
+}
+
+TEST(splituri_authority_types, authority_ldap_format)
+{
+    siddiqsoft::AuthorityLdap<char> ldap;
+    ldap.host = "dc=example,dc=com";
+    EXPECT_EQ("[dc=example,dc=com]", std::format("{}", ldap));
+}
+
+TEST(splituri_authority_types, authority_none_serialization)
+{
+    siddiqsoft::AuthorityNone<char> none;
+    none.none = "something";
+    EXPECT_EQ("something", std::string(none));
+}
+
+TEST(splituri_authority_types, authority_none_format)
+{
+    siddiqsoft::AuthorityNone<char> none;
+    none.none = "something";
+    EXPECT_EQ("something", std::format("{}", none));
+}
+
+TEST(splituri_authority_types, authority_none_empty)
+{
+    siddiqsoft::AuthorityNone<char> none;
+    EXPECT_EQ("", std::string(none));
+}
+
+TEST(splituri_json, json_all_scheme_enums)
+{
+    nlohmann::json j;
+    j = siddiqsoft::UriScheme::WebHttps;
+    EXPECT_EQ("https", j.get<std::string>());
+    j = siddiqsoft::UriScheme::WebSocketSecure;
+    EXPECT_EQ("wss", j.get<std::string>());
+    j = siddiqsoft::UriScheme::Ldap;
+    EXPECT_EQ("ldap", j.get<std::string>());
+    j = siddiqsoft::UriScheme::Mailto;
+    EXPECT_EQ("mailto", j.get<std::string>());
+    j = siddiqsoft::UriScheme::News;
+    EXPECT_EQ("news", j.get<std::string>());
+    j = siddiqsoft::UriScheme::Tel;
+    EXPECT_EQ("tel", j.get<std::string>());
+    j = siddiqsoft::UriScheme::Telnet;
+    EXPECT_EQ("telnet", j.get<std::string>());
+    j = siddiqsoft::UriScheme::Urn;
+    EXPECT_EQ("urn", j.get<std::string>());
+    j = siddiqsoft::UriScheme::Unknown;
+    EXPECT_TRUE(j.is_null());
+}
+
+TEST(splituri_json, json_uri_with_empty_path_and_query)
+{
+    auto           uri = siddiqsoft::SplitUri("https://example.com/");
+    nlohmann::json doc = uri;
+    EXPECT_TRUE(doc.at("path").is_array());
+    EXPECT_EQ(0, doc.at("path").size());
+    EXPECT_TRUE(doc.at("query").is_object());
+    EXPECT_EQ(0, doc.at("query").size());
+    EXPECT_EQ("", doc.at("fragment").get<std::string>());
+    EXPECT_EQ("/", doc.at("urlPart").get<std::string>());
+    EXPECT_EQ("/", doc.at("pathPart").get<std::string>());
+    EXPECT_EQ("", doc.at("queryPart").get<std::string>());
+}
+
+TEST(splituri_json, json_uri_multiple_path_and_query)
+{
+    auto           uri = siddiqsoft::SplitUri("https://example.com/a/b/c?x=1&y=2#frag");
+    nlohmann::json doc = uri;
+    EXPECT_EQ(3, doc.at("path").size());
+    EXPECT_EQ("a", doc.at("path").at(0).get<std::string>());
+    EXPECT_EQ("c", doc.at("path").at(2).get<std::string>());
+    EXPECT_EQ("1", doc.at("query").at("x").get<std::string>());
+    EXPECT_EQ("2", doc.at("query").at("y").get<std::string>());
+    EXPECT_EQ("frag", doc.at("fragment").get<std::string>());
+}
+
+TEST(splituri_whatwg_sanitize, no_tabs_or_newlines_passthrough)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com/path?q=1#frag");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ("/path?q=1#frag", uri.urlPart);
+}
+
+TEST(splituri_whatwg_sanitize, strip_null_byte_leading)
+{
+    std::string input = std::string(1, '\0') + "https://example.com/";
+    auto        uri   = siddiqsoft::SplitUri(input);
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+
+TEST(splituri_edge_cases, input_shorter_than_scheme)
+{
+    auto uri = siddiqsoft::SplitUri("http");
+    EXPECT_EQ("", uri.authority.host);
+    EXPECT_TRUE(uri.path.empty());
+}
+TEST(splituri_edge_cases, input_partial_scheme)
+{
+    auto uri = siddiqsoft::SplitUri("https:");
+    EXPECT_EQ("", uri.authority.host);
+}
+TEST(splituri_edge_cases, input_scheme_no_slashes)
+{
+    auto uri = siddiqsoft::SplitUri("https:example.com");
+    EXPECT_EQ("", uri.authority.host);
+}
+TEST(splituri_edge_cases, host_only_no_path_no_query)
+{
+    auto uri = siddiqsoft::SplitUri("https://example.com");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ(443, uri.authority.port);
+    EXPECT_EQ("", uri.urlPart);
+    EXPECT_TRUE(uri.path.empty());
+    EXPECT_TRUE(uri.query.empty());
+    EXPECT_EQ("", uri.fragment);
+}
+
+TEST(splituri_format, format_scheme_ldap)
+{
+    EXPECT_EQ("ldap", std::format("{}", siddiqsoft::UriScheme::Ldap));
+}
+TEST(splituri_format, format_scheme_mailto)
+{
+    EXPECT_EQ("mailto", std::format("{}", siddiqsoft::UriScheme::Mailto));
+}
+TEST(splituri_format, format_scheme_unknown)
+{
+    EXPECT_EQ("Unknown", std::format("{}", siddiqsoft::UriScheme::Unknown));
 }

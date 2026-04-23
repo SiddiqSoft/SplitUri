@@ -155,8 +155,8 @@ TEST(helpers_splituri_wide_nojson, authority_serialization_with_password)
     siddiqsoft::AuthorityHttp<wchar_t> a;
     a.userInfo = L"admin";
     a.password = L"secret";
-    a.host = L"example.com";
-    a.port = 443;
+    a.host     = L"example.com";
+    a.port     = 443;
     EXPECT_EQ(L"admin:secret@example.com:443", std::wstring(a));
     EXPECT_EQ(L"admin:secret@example.com:443", std::format(L"{}", a));
 }
