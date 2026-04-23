@@ -1,6 +1,6 @@
 # SiddiqSoft.SplitUri
 
-Header-only C++20 library for parsing Uri.
+Header-only C++20 library for parsing Uri conforming to the [WHATWG URL Standard](https://url.spec.whatwg.org/).
 
 <!-- badges -->
 [![CodeQL](https://github.com/SiddiqSoft/SplitUri/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/SiddiqSoft/SplitUri/actions/workflows/codeql-analysis.yml)
@@ -37,7 +37,7 @@ The [anatomy of a Uri](https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
    scheme          authority                  path                 query           fragment
 ```
 
-In this library, we focus on the `http` and `https` scheme.
+In this library, we support all WHATWG special schemes (`ftp`, `file`, `http`, `https`, `ws`, `wss`) with a focus on HTTP-based protocols.
 
 <hr/>
 
@@ -140,6 +140,7 @@ Returns the `sourceUri` member variable or rebuilds the string via std::format.
     struct AuthorityHttp
     {
         std::basic_string<CharT> userInfo {};
+        std::basic_string<CharT> password {};
         std::basic_string<CharT> host {};
         uint16_t                 port {0};
 
@@ -151,9 +152,10 @@ Returns the `sourceUri` member variable or rebuilds the string via std::format.
 
 Variable | Description
 ---------|-------------
-`std::basic_string<CharT>`<br/>-_`userInfo`_ | The fragment segment of the Uri.
-`std::basic_string<CharT>`<br/>-_`host`_ | Shortcut to the url segment (balance post the authority section).
-`uint16_t`<br/>-_`port`_ | Shortcut to the query segment.
+`std::basic_string<CharT>`<br/>-_`userInfo`_ | The username portion of the credentials (WHATWG: `username`).
+`std::basic_string<CharT>`<br/>-_`password`_ | The password portion of the credentials (WHATWG: `password`). Parsed from `user:pass@host`.
+`std::basic_string<CharT>`<br/>-_`host`_ | The host portion of the authority. Lowercased for special schemes per WHATWG.
+`uint16_t`<br/>-_`port`_ | The port number. Defaults to the scheme's default port. Must be 0-65535 per WHATWG.
 
 #### Member Functions
 
@@ -170,8 +172,13 @@ Variable | Description
 ```cpp
     enum class UriScheme
     {
-        WebHttp,  WebHttps,
-        Ldap,  Mailto,  News,  Tel,  Telnet,  Urn, // Not supported
+        WebHttp,           // http (default port 80)
+        WebHttps,          // https (default port 443)
+        WebSocket,         // ws (default port 80) - WHATWG special scheme
+        WebSocketSecure,   // wss (default port 443) - WHATWG special scheme
+        Ftp,               // ftp (default port 21) - WHATWG special scheme
+        File,              // file (no default port) - WHATWG special scheme
+        Ldap,  Mailto,  News,  Tel,  Telnet,  Urn, // Not supported as special schemes
         Unknown
     };
 ```

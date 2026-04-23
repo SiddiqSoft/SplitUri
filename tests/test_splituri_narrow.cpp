@@ -62,7 +62,8 @@ TEST(helpers_splituri_narrow, test_1b)
     using namespace siddiqsoft::splituri_literals;
 
     auto uri = "https://YOURDBNAME.documents.azure.com:443/"_Uri;
-    EXPECT_EQ("YOURDBNAME.documents.azure.com", uri.authority.host);
+    // WHATWG: host is lowercased for special schemes
+    EXPECT_EQ("yourdbname.documents.azure.com", uri.authority.host);
     EXPECT_EQ(443, uri.authority.port);
     EXPECT_EQ("/", uri.urlPart);
     EXPECT_EQ("", uri.queryPart);
@@ -74,7 +75,8 @@ TEST(helpers_splituri_narrow, test_1c)
     using namespace siddiqsoft::splituri_literals;
 
     auto uri = "https://YOURDBNAME.documents.azure.com:1443/"_Uri;
-    EXPECT_EQ("YOURDBNAME.documents.azure.com", uri.authority.host);
+    // WHATWG: host is lowercased for special schemes
+    EXPECT_EQ("yourdbname.documents.azure.com", uri.authority.host);
     EXPECT_EQ(1443, uri.authority.port);
     EXPECT_EQ("/", uri.urlPart);
     EXPECT_EQ("", uri.queryPart);
@@ -108,7 +110,7 @@ TEST(helpers_splituri_narrow, test_3b)
 {
     auto uri = siddiqsoft::SplitUri("http://search.msn.com:65536/");
     EXPECT_EQ("search.msn.com", uri.authority.host);
-    EXPECT_EQ(0, uri.authority.port); // max uint16_t is 65535 so anything more will roll it over to 0
+    EXPECT_EQ(0, uri.authority.port); // WHATWG: port-out-of-range validation error
     EXPECT_EQ("/", uri.urlPart);
 
     std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
@@ -155,7 +157,8 @@ TEST(helpers_splituri_narrow, test_5a)
 {
     auto uri = siddiqsoft::SplitUri("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
                                     "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
-    EXPECT_EQ("<ServerName>", uri.authority.host);
+    // WHATWG: host is lowercased for special schemes
+    EXPECT_EQ("<servername>", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ("/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5",
               uri.urlPart);
@@ -172,7 +175,8 @@ TEST(helpers_splituri_narrow, test_5b)
 {
     auto uri = siddiqsoft::SplitUri("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
                                     "model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5");
-    EXPECT_EQ("<ServerName>", uri.authority.host);
+    // WHATWG: host is lowercased for special schemes
+    EXPECT_EQ("<servername>", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ("/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')/?Ranges('Sheet1!A1')=5.5",
               uri.urlPart);
@@ -190,7 +194,8 @@ TEST(helpers_splituri_narrow, test_5c)
 {
     auto uri = siddiqsoft::SplitUri("http://<ServerName>/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/"
                                     "model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5");
-    EXPECT_EQ("<ServerName>", uri.authority.host);
+    // WHATWG: host is lowercased for special schemes
+    EXPECT_EQ("<servername>", uri.authority.host);
     EXPECT_EQ(80, uri.authority.port);
     EXPECT_EQ("/_vti_bin/ExcelRest.aspx/Docs/Documents/sampleWorkbook.xlsx/model/Charts('Chart%201')?Ranges('Sheet1!A1')=5.5",
               uri.urlPart);
@@ -392,7 +397,7 @@ TEST(helpers_splituri_narrow, test_9c)
 
     auto uri = "http://n.co:65536/"_Uri;
     EXPECT_EQ("n.co", uri.authority.host);
-    EXPECT_EQ(0, uri.authority.port); // we're just above the max uint16_t
+    EXPECT_EQ(0, uri.authority.port); // WHATWG: port-out-of-range validation error
     EXPECT_EQ("/", uri.urlPart);
 
     std::cerr << "Re-serialized: " << std::string(uri) << std::endl;
@@ -481,4 +486,187 @@ TEST(helpers_splituri_narrow, test_99a)
     nlohmann::json doc = uri;
     EXPECT_TRUE(doc.is_object());
     std::cerr << doc.dump(3) << std::endl;
+}
+
+
+// ============================================================================
+// WHATWG URL Standard conformance tests
+// ============================================================================
+
+TEST(helpers_splituri_narrow_whatwg, test_special_schemes_ws)
+{
+    // WHATWG: ws:// is a special scheme with default port 80
+    auto uri = siddiqsoft::SplitUri("ws://example.com/chat");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebSocket, uri.scheme);
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ(80, uri.authority.port);
+    EXPECT_EQ("/chat", uri.urlPart);
+    EXPECT_TRUE(siddiqsoft::isSpecialScheme(uri.scheme));
+    EXPECT_EQ(80, siddiqsoft::defaultPortForScheme(uri.scheme));
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_special_schemes_wss)
+{
+    // WHATWG: wss:// is a special scheme with default port 443
+    auto uri = siddiqsoft::SplitUri("wss://example.com/chat");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebSocketSecure, uri.scheme);
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ(443, uri.authority.port);
+    EXPECT_EQ("/chat", uri.urlPart);
+    EXPECT_TRUE(siddiqsoft::isSpecialScheme(uri.scheme));
+    EXPECT_EQ(443, siddiqsoft::defaultPortForScheme(uri.scheme));
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_special_schemes_ftp)
+{
+    // WHATWG: ftp:// is a special scheme with default port 21
+    auto uri = siddiqsoft::SplitUri("ftp://files.example.com/pub/readme.txt");
+    EXPECT_EQ(siddiqsoft::UriScheme::Ftp, uri.scheme);
+    EXPECT_EQ("files.example.com", uri.authority.host);
+    EXPECT_EQ(21, uri.authority.port);
+    EXPECT_EQ("/pub/readme.txt", uri.urlPart);
+    EXPECT_TRUE(siddiqsoft::isSpecialScheme(uri.scheme));
+    EXPECT_EQ(21, siddiqsoft::defaultPortForScheme(uri.scheme));
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_case_insensitive_scheme)
+{
+    // WHATWG: Schemes are case-insensitive
+    auto uri1 = siddiqsoft::SplitUri("HTTPS://example.com/");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, uri1.scheme);
+    EXPECT_EQ("example.com", uri1.authority.host);
+
+    auto uri2 = siddiqsoft::SplitUri("HtTpS://example.com/");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, uri2.scheme);
+    EXPECT_EQ("example.com", uri2.authority.host);
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_host_lowercasing)
+{
+    // WHATWG Section 3.5: Hosts are lowercased for special schemes
+    auto uri = siddiqsoft::SplitUri("https://EXAMPLE.COM/path");
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_strip_leading_trailing_whitespace)
+{
+    // WHATWG Section 4.4 Step 1: Strip leading/trailing C0 control or space
+    auto uri = siddiqsoft::SplitUri("  https://example.com/  ");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ("/", uri.urlPart);
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_remove_tab_newline)
+{
+    // WHATWG Section 4.4 Step 3: Remove ASCII tab and newline
+    auto uri = siddiqsoft::SplitUri("https://exa\tmple.com/pa\nth");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ("/path", uri.urlPart);
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_password_parsing)
+{
+    // WHATWG: username:password are separate fields
+    auto uri = siddiqsoft::SplitUri("https://user:pass@example.com/");
+    EXPECT_EQ("user", uri.authority.userInfo);
+    EXPECT_EQ("pass", uri.authority.password);
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ(443, uri.authority.port);
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_password_empty)
+{
+    // WHATWG: username without password
+    auto uri = siddiqsoft::SplitUri("https://user@example.com/");
+    EXPECT_EQ("user", uri.authority.userInfo);
+    EXPECT_EQ("", uri.authority.password);
+    EXPECT_EQ("example.com", uri.authority.host);
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_port_out_of_range)
+{
+    // WHATWG Section 4.4 port state: port > 65535 is a validation error
+    auto uri = siddiqsoft::SplitUri("https://example.com:70000/");
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ(0, uri.authority.port); // port-out-of-range
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_dot_segment_resolution)
+{
+    // WHATWG Section 4.4 path state: "." and ".." segments are resolved
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/b/../c");
+    EXPECT_EQ("example.com", uri.authority.host);
+    // Path should resolve: a, b, .., c -> a, c
+    EXPECT_EQ(2, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("c", uri.path.at(1));
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_single_dot_segment_resolution)
+{
+    // WHATWG: Single dot segments are removed
+    auto uri = siddiqsoft::SplitUri("https://example.com/a/./b/./c");
+    EXPECT_EQ(3, uri.path.size());
+    EXPECT_EQ("a", uri.path.at(0));
+    EXPECT_EQ("b", uri.path.at(1));
+    EXPECT_EQ("c", uri.path.at(2));
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_double_dot_to_root)
+{
+    // WHATWG: ".." at root stays at root
+    auto uri = siddiqsoft::SplitUri("https://example.com/../path");
+    EXPECT_EQ(1, uri.path.size());
+    EXPECT_EQ("path", uri.path.at(0));
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_default_port_table)
+{
+    // Verify the WHATWG default port table
+    EXPECT_EQ(21, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::Ftp));
+    EXPECT_EQ(80, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::WebHttp));
+    EXPECT_EQ(443, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::WebHttps));
+    EXPECT_EQ(80, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::WebSocket));
+    EXPECT_EQ(443, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::WebSocketSecure));
+    EXPECT_EQ(0, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::File));
+    EXPECT_EQ(0, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::Unknown));
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_is_special_scheme)
+{
+    // Verify WHATWG special scheme classification
+    EXPECT_TRUE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::Ftp));
+    EXPECT_TRUE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::File));
+    EXPECT_TRUE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::WebHttp));
+    EXPECT_TRUE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::WebHttps));
+    EXPECT_TRUE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::WebSocket));
+    EXPECT_TRUE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::WebSocketSecure));
+    EXPECT_FALSE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::Mailto));
+    EXPECT_FALSE(siddiqsoft::isSpecialScheme(siddiqsoft::UriScheme::Unknown));
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_ws_with_port)
+{
+    auto uri = siddiqsoft::SplitUri("ws://example.com:9090/chat?room=general");
+    EXPECT_EQ(siddiqsoft::UriScheme::WebSocket, uri.scheme);
+    EXPECT_EQ("example.com", uri.authority.host);
+    EXPECT_EQ(9090, uri.authority.port);
+    EXPECT_EQ("/chat?room=general", uri.urlPart);
+    EXPECT_EQ(1, uri.path.size());
+    EXPECT_EQ("chat", uri.path.at(0));
+    EXPECT_EQ(1, uri.query.size());
+    EXPECT_EQ("general", uri.query.at("room"));
+}
+
+TEST(helpers_splituri_narrow_whatwg, test_ftp_with_credentials)
+{
+    auto uri = siddiqsoft::SplitUri("ftp://admin:secret@files.example.com:2121/pub/");
+    EXPECT_EQ(siddiqsoft::UriScheme::Ftp, uri.scheme);
+    EXPECT_EQ("admin", uri.authority.userInfo);
+    EXPECT_EQ("secret", uri.authority.password);
+    EXPECT_EQ("files.example.com", uri.authority.host);
+    EXPECT_EQ(2121, uri.authority.port);
+    EXPECT_EQ("/pub/", uri.urlPart);
+    EXPECT_EQ(1, uri.path.size());
+    EXPECT_EQ("pub", uri.path.at(0));
 }
