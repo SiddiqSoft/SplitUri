@@ -48,43 +48,23 @@ namespace siddiqsoft
 		auto u = "https://www.google.com/search?q=siddiqsoft&from=example_1_narrow#v1"_Uri;
 
 		EXPECT_EQ("www.google.com", u.authority.host);
-		std::cerr << u.authority.host << std::endl;
-
 		EXPECT_EQ(443, u.authority.port);
-		std::cerr << u.authority.port << std::endl;
-
 		EXPECT_EQ("/search?q=siddiqsoft&from=example_1_narrow#v1", u.urlPart);
-		std::cerr << u.urlPart << std::endl;
-
 		EXPECT_EQ("q=siddiqsoft&from=example_1_narrow", u.queryPart);
-		std::cerr << u.queryPart << std::endl;
-
 		EXPECT_EQ("v1", u.fragment);
-		std::cerr << u.fragment << std::endl;
 
 		EXPECT_EQ("search", u.path.at(0));
 		nlohmann::json dp = u.path;
-		std::cerr << dp.dump() << std::endl;
 		EXPECT_EQ("search", dp[0].get<std::string>());
 
 		EXPECT_EQ("siddiqsoft", u.query.at("q"));
 		nlohmann::json dq = u.query;
-		std::cerr << dq.dump() << std::endl;
 		EXPECT_EQ("siddiqsoft", dq.value("q", ""));
 		EXPECT_EQ("example_1_narrow", dq.value("from", ""));
 
-		// Checks that both serializers are available (caught at compile-time)
 		EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, u.scheme);
-		std::cerr << std::format("{}", u.scheme) << "....";
-		std::cerr << nlohmann::json(u.scheme).dump() << std::endl;
-
-		// Note that despite the initial uri string skipping the port, the SplitUri decodes and stores the port
 		EXPECT_EQ("www.google.com:443", std::format("{}", u.authority));
-		std::cerr << std::format("{}", u.authority) << std::endl;
-
-		// The "rebuilt" endpoint
 		EXPECT_EQ("https://www.google.com/search?q=siddiqsoft&from=example_1_narrow#v1", std::format("{}", u));
-		std::cerr << std::format("{}", u) << std::endl;
 	}
 
 
@@ -95,44 +75,89 @@ namespace siddiqsoft
 		auto u = L"https://www.google.com/search?q=siddiqsoft&from=example_1_wide#v1"_Uri;
 
 		EXPECT_EQ(L"www.google.com", u.authority.host);
-		std::wcerr << u.authority.host << std::endl;
-
 		EXPECT_EQ(443, u.authority.port);
-		std::wcerr << u.authority.port << std::endl;
-
 		EXPECT_EQ(L"/search?q=siddiqsoft&from=example_1_wide#v1", u.urlPart);
-		std::wcerr << u.urlPart << std::endl;
-
 		EXPECT_EQ(L"q=siddiqsoft&from=example_1_wide", u.queryPart);
-		std::wcerr << u.queryPart << std::endl;
-
 		EXPECT_EQ(L"v1", u.fragment);
-		std::wcerr << u.fragment << std::endl;
 
 		EXPECT_EQ(L"search", u.path.at(0));
-		nlohmann::json dp;   //= u.path; // does not work due as json lib does not support wstring
-		to_json(dp, u.path); // we must explicity convert
-		std::cerr << dp.dump() << std::endl;
+		nlohmann::json dp;
+		to_json(dp, u.path);
 		EXPECT_EQ("search", dp[0].get<std::string>());
 
 		EXPECT_EQ(L"siddiqsoft", u.query.at(L"q"));
-		nlohmann::json dq;    //= u.query; // does not work due as json lib does not support wstring
-		to_json(dq, u.query); // we must explicity convert
-		std::cerr << dq.dump() << std::endl;
+		nlohmann::json dq;
+		to_json(dq, u.query);
 		EXPECT_EQ("siddiqsoft", dq.value("q", ""));
 		EXPECT_EQ("example_1_wide", dq.value("from", ""));
 
-		// Checks that both serializers are available (caught at compile-time)
 		EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, u.scheme);
-		std::wcerr << std::format(L"{}", u.scheme) << L"....";
-		std::cerr << nlohmann::json(u.scheme).dump() << std::endl;
-
-		// Note that despite the initial uri string skipping the port, the SplitUri decodes and stores the port
 		EXPECT_EQ(L"www.google.com:443", std::format(L"{}", u.authority));
-		std::wcerr << std::format(L"{}", u.authority) << std::endl;
-
-		// The "rebuilt" endpoint
 		EXPECT_EQ(L"https://www.google.com/search?q=siddiqsoft&from=example_1_wide#v1", std::format(L"{}", u));
-		std::wcerr << std::format(L"{}", u) << std::endl;
 	}
+
+
+	TEST(examples, example_websocket)
+	{
+		// WHATWG: WebSocket scheme support
+		auto uri = siddiqsoft::SplitUri("ws://chat.example.com:9090/room?id=42#messages");
+
+		EXPECT_EQ(siddiqsoft::UriScheme::WebSocket, uri.scheme);
+		EXPECT_EQ("chat.example.com", uri.authority.host);
+		EXPECT_EQ(9090, uri.authority.port);
+		EXPECT_EQ("room", uri.path.at(0));
+		EXPECT_EQ("42", uri.query.at("id"));
+		EXPECT_EQ("messages", uri.fragment);
+
+		// Verify it's a special scheme
+		EXPECT_TRUE(siddiqsoft::isSpecialScheme(uri.scheme));
+		EXPECT_EQ(80, siddiqsoft::defaultPortForScheme(siddiqsoft::UriScheme::WebSocket));
+	}
+
+
+	TEST(examples, example_ftp_with_credentials)
+	{
+		// WHATWG: FTP with username:password
+		auto uri = siddiqsoft::SplitUri("ftp://admin:secret@files.example.com:2121/pub/readme.txt");
+
+		EXPECT_EQ(siddiqsoft::UriScheme::Ftp, uri.scheme);
+		EXPECT_EQ("admin", uri.authority.userInfo);
+		EXPECT_EQ("secret", uri.authority.password);
+		EXPECT_EQ("files.example.com", uri.authority.host);
+		EXPECT_EQ(2121, uri.authority.port);
+		EXPECT_EQ(2, uri.path.size());
+		EXPECT_EQ("pub", uri.path.at(0));
+		EXPECT_EQ("readme.txt", uri.path.at(1));
+
+		// Authority serialization includes credentials
+		EXPECT_EQ("admin:secret@files.example.com:2121", std::format("{}", uri.authority));
+	}
+
+
+	TEST(examples, example_dot_segment_resolution)
+	{
+		// WHATWG: Path dot-segment resolution
+		auto uri = siddiqsoft::SplitUri("https://example.com/a/b/c/../../d/./e");
+
+		EXPECT_EQ("example.com", uri.authority.host);
+		// a, b, c, .., .., d, ., e -> a, d, e
+		EXPECT_EQ(3, uri.path.size());
+		EXPECT_EQ("a", uri.path.at(0));
+		EXPECT_EQ("d", uri.path.at(1));
+		EXPECT_EQ("e", uri.path.at(2));
+	}
+
+
+	TEST(examples, example_case_insensitive_scheme)
+	{
+		// WHATWG: Schemes are case-insensitive
+		auto uri = siddiqsoft::SplitUri("HTTPS://EXAMPLE.COM/Path");
+
+		EXPECT_EQ(siddiqsoft::UriScheme::WebHttps, uri.scheme);
+		EXPECT_EQ("example.com", uri.authority.host); // host lowercased
+		EXPECT_EQ(443, uri.authority.port);
+		EXPECT_EQ(1, uri.path.size());
+		EXPECT_EQ("Path", uri.path.at(0)); // path segments are NOT lowercased
+	}
+
 } // namespace siddiqsoft
