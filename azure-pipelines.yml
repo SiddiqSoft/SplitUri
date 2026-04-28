@@ -127,7 +127,7 @@ stages:
       displayName: 'Publish Coverage Results (Linux builds)'
       inputs:
         summaryFileLocation: '$(System.DefaultWorkingDirectory)/build/$(cmake.preset)/tests/results/coverage.*'
-      condition: and(succeeded(), startsWith(variables['Agent.OS'], 'Linux'), startsWith(variables['Agent.OSArchitecture'], 'X64')
+      condition: and(succeeded(), startsWith(variables['Agent.OS'], 'Linux'), startsWith(variables['Agent.OSArchitecture'], 'X64'))
 
 ################################## STAGE ####################################
 # STAGE: Pack_n_Publish                                                     #
