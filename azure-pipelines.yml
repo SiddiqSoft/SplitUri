@@ -62,13 +62,13 @@ stages:
         versionSpec: '>=6.0.0-0'
         checkLatest: true
 
-    - task: gitversion/setup@3.0.0
+    - task: gitversion-setup@4
       displayName: 'Install GitVersion..'
       inputs:
         versionSpec: '6.0'
         preferLatestVersion: true
 
-    - task: gitversion/execute@3.0.0
+    - task: gitversion-execute@4
       displayName: 'Determine Version..'
       name: version_step
       inputs:
@@ -79,13 +79,13 @@ stages:
     - task: CMake@1
       displayName: 'CMake Configure $(cmake.preset)'
       inputs:
-        cmakeArgs: '--preset $(cmake.preset) -DCI_BUILDID=$(GitVersion.MajorMinorPatch)'
+        cmakeArgs: '--preset $(cmake.preset) -DCI_BUILDID=$(GITVERSION_MAJORMINORPATCH)'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
 
     - task: CMake@1
       displayName: 'CMake Build $(cmake.preset)'
       inputs:
-        cmakeArgs: '--build --preset $(cmake.preset) -DCI_BUILDID=$(GitVersion.MajorMinorPatch)'
+        cmakeArgs: '--build --preset $(cmake.preset) -DCI_BUILDID=$(GITVERSION_MAJORMINORPATCH)'
         workingDirectory: '$(System.DefaultWorkingDirectory)'
       condition: succeeded()
 
@@ -127,7 +127,7 @@ stages:
       displayName: 'Publish Coverage Results (Linux builds)'
       inputs:
         summaryFileLocation: '$(System.DefaultWorkingDirectory)/build/$(cmake.preset)/tests/results/coverage.*'
-      condition: and(succeeded(), startsWith(variables['Agent.OS'], 'Linux'))
+      condition: and(succeeded(), startsWith(variables['Agent.OS'], 'Linux'), startsWith(variables['Agent.OSArchitecture'], 'X64')
 
 ################################## STAGE ####################################
 # STAGE: Pack_n_Publish                                                     #
@@ -161,13 +161,13 @@ stages:
         - Agent.OS -equals $(osName)
 
     steps:
-    - task: gitversion/setup@3.0.0
+    - task: gitversion-setup@4
       displayName: 'Install GitVersion..'
       inputs:
         versionSpec: '6.0'
         preferLatestVersion: true
 
-    - task: gitversion/execute@3.0.0
+    - task: gitversion-execute@4
       displayName: 'Determine Version..'
       name: version_step
       inputs:
@@ -181,12 +181,12 @@ stages:
         checkLatest: true
 
     - task: NuGetCommand@2
-      displayName: 'NuGet pack v$(GitVersion.MajorMinorPatch)'
+      displayName: 'NuGet pack v$(GITVERSION_MAJORMINORPATCH)'
       inputs:
         command: 'pack'
         packagesToPack: 'pack/*.nuspec'
         versioningScheme: 'off'
-        buildProperties: 'VERSION=$(GitVersion.MajorMinorPatch)'
+        buildProperties: 'VERSION=$(GITVERSION_MAJORMINORPATCH)'
       condition: and(succeeded(), startsWith(variables['Agent.OS'], 'Windows'))
 
     - task: NuGetCommand@2
@@ -206,8 +206,8 @@ stages:
         action: 'create'
         target: '$(Build.SourceVersion)'
         tagSource: 'userSpecifiedTag'
-        tag: '$(GitVersion.MajorMinorPatch)'
-        title: 'v$(GitVersion.MajorMinorPatch)'
+        tag: '$(GITVERSION_MAJORMINORPATCH)'
+        title: 'v$(GITVERSION_MAJORMINORPATCH)'
         releaseNotesSource: 'inline'
         releaseNotesInline: 'Documentation https://github.com/SiddiqSoft/SplitUri'
         isPreRelease: true
